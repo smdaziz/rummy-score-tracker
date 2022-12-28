@@ -1,0 +1,33 @@
+Firebase Info:
+==============
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDaSmceFuVUP36mJDmdqccjlxSxacjaVg0",
+  authDomain: "rummy-score-tracker.firebaseapp.com",
+  projectId: "rummy-score-tracker",
+  storageBucket: "rummy-score-tracker.appspot.com",
+  messagingSenderId: "420450892849",
+  appId: "1:420450892849:web:acdc3c6f8d9c875d116910"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+
+
+
+
+App background and colors - some nice looking colors - https://bryanlrobinson.com/blog/how-to-use-css-grid-to-mix-and-match-design-patterns/
+
+
+
+YouTube Ref : https://www.youtube.com/watch?v=PKwu15ldZ7k&t=6s
+
+GitHub Pages Deployment : https://github.com/gitname/react-gh-pages
+
