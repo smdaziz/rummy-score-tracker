@@ -10,8 +10,8 @@ function App() {
         <Router>
           <AuthProvider>
             <Switch>
-              <Route path="/signup" component={Signup}/>
-              {/* <Route path="/signup" component={<Signup/>}/> */}
+              {/* <Route path="/signup" component={Signup}/> */}
+              <Route path="/signup" component={<Signup/>}/>
             </Switch>
           </AuthProvider>
         </Router>
