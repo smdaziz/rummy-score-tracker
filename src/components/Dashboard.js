@@ -30,6 +30,7 @@ function Dashboard() {
         Logged in as
          <div>{name}</div>
          <div>{user?.email}</div>
+         <button className="dashboard_btn" onClick={() => navigate("/newgame")}>New Game</button>
          <button className="dashboard__btn" onClick={logout}>
           Logout
          </button>

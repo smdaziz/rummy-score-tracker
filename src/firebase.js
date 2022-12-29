@@ -43,6 +43,9 @@ import {
   collection,
   where,
   addDoc,
+  updateDoc,
+  doc,
+  deleteDoc
 } from "firebase/firestore";
 
 const app = initializeApp({
@@ -117,6 +120,60 @@ const logout = () => {
   signOut(auth);
 };
 
+const saveRoundData = async (roundData) => {
+  try {
+    await addDoc(collection(db, "game"), roundData);
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
+
+const updateRoundData = async (roundData) => {
+  try {
+    const q = query(collection(db, "game"), where("id", "==", roundData.id));
+    const docs = await getDocs(q);
+    docs.forEach(async (d) => {
+      const docRef = doc(db, "game", d.id);
+      await updateDoc(docRef, roundData);
+    })
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
+
+const deleteRoundData = async (roundId) => {
+  try {
+    const q = query(collection(db, "game"), where("id", "==", roundId));
+    const docs = await getDocs(q);
+    docs.forEach(async (d) => {
+      const docRef = doc(db, "game", d.id);
+      await deleteDoc(docRef);
+    })
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
+
+const getGameData = async () => {
+  const gameData = [];
+  try {
+    const q = query(collection(db, "game"));
+    const docs = await getDocs(q);
+    docs.forEach((d) => {
+      console.log(d.data());
+      gameData.push(d.data());
+    })
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  } finally {
+    return gameData;
+  }
+};
+
 export {
   auth,
   db,
@@ -125,4 +182,8 @@ export {
   registerWithEmailAndPassword,
   sendPasswordReset,
   logout,
+  saveRoundData,
+  updateRoundData,
+  deleteRoundData,
+  getGameData
 };
