@@ -137,9 +137,8 @@ const getPlayers = async () => {
     const q = query(collection(db, "players"));
     const docs = await getDocs(q);
     docs.forEach((doc) => {
-      console.log(doc.data());
       players.push(doc.data());
-    })
+    });
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -150,6 +149,7 @@ const getPlayers = async () => {
 
 const saveRoundData = async (roundData) => {
   try {
+    roundData['roundNumber'] = Date.now();
     await addDoc(collection(db, "game"), roundData);
   } catch (err) {
     console.error(err);
@@ -164,7 +164,7 @@ const updateRoundData = async (roundData) => {
     docs.forEach(async (d) => {
       const docRef = doc(db, "game", d.id);
       await updateDoc(docRef, roundData);
-    })
+    });
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -178,7 +178,7 @@ const deleteRoundData = async (roundId) => {
     docs.forEach(async (d) => {
       const docRef = doc(db, "game", d.id);
       await deleteDoc(docRef);
-    })
+    });
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -191,14 +191,90 @@ const getGameData = async () => {
     const q = query(collection(db, "game"));
     const docs = await getDocs(q);
     docs.forEach((doc) => {
-      console.log(doc.data());
       gameData.push(doc.data());
-    })
+    });
+    gameData?.sort((round1, round2) => round1?.roundNumber - round2?.roundNumber);
   } catch (err) {
     console.error(err);
     alert(err.message);
   } finally {
     return gameData;
+  }
+};
+
+const resetGame = async() => {
+  try {
+    await saveGameHistory();
+    const gameQuery = query(collection(db, "game"));
+    const gameDocs = await getDocs(gameQuery);
+    gameDocs.forEach(async (d) => {
+      const docRef = doc(db, "game", d.id);
+      await deleteDoc(docRef);
+    });
+    const playersQuery = query(collection(db, "players"));
+    const playerDocs = await getDocs(playersQuery);
+    playerDocs.forEach(async (d) => {
+      const docRef = doc(db, "players", d.id);
+      await deleteDoc(docRef);
+    });
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
+
+const saveGameHistory = async() => {
+  try {
+    //get players
+    const players = [];
+
+    const playersQuery = query(collection(db, "players"));
+    const playerDocs = await getDocs(playersQuery);
+    playerDocs.forEach(async (d) => {
+      const playersObj = d?.data();
+      Object.keys(playersObj)?.forEach(player => {
+        players.push(playersObj[player]);
+      });
+    });
+
+    //player scores
+    const playerTotals = {};
+    players?.forEach(player => playerTotals[player] = 0);
+
+    //get rounds
+    const rounds = [];
+    const gameQuery = query(collection(db, "game"));
+    const gameDocs = await getDocs(gameQuery);
+    gameDocs.forEach(async (d) => {
+      const round = d?.data();
+      rounds.push(round);
+      players?.forEach(player => {
+        playerTotals[player] += Number(round[player]);
+      });
+    });
+    rounds?.sort((round1, round2) => round1?.roundNumber - round2?.roundNumber);
+
+    const playerRanking = [];
+    players?.forEach(player => {
+      playerRanking.push({
+        name: player,
+        total: playerTotals[player]
+      });
+    });
+    playerRanking?.sort((p1, p2) => p1?.total - p2?.total);
+
+    const gameHistory = {
+      utcDateMS: Date.now(),
+      rounds,
+      players,
+      playerRanking,
+      winner: playerRanking[0]?.name
+    };
+    // console.log(JSON.stringify(gameHistory));
+    await addDoc(collection(db, "game_history"), gameHistory);
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
   }
 };
 
@@ -215,5 +291,6 @@ export {
   saveRoundData,
   updateRoundData,
   deleteRoundData,
-  getGameData
+  getGameData,
+  resetGame
 };

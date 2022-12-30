@@ -32,6 +32,9 @@ YouTube Ref : https://www.youtube.com/watch?v=PKwu15ldZ7k&t=6s
 GitHub Pages Deployment : https://github.com/gitname/react-gh-pages
 
 
+Auth Resource : https://blog.logrocket.com/user-authentication-firebase-react-apps/
+
+
 YouTube React Table Ref : https://www.youtube.com/watch?v=dYjdzpZv5yc
 GitHub Code Ref : https://github.com/chrisblakely01/react-creating-a-table/blob/main/src/App.js
 

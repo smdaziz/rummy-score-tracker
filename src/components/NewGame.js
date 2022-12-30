@@ -5,7 +5,8 @@ import { nanoid } from "nanoid";
 import "./NewGame.css";
 import ReadOnlyRow from "./ReadOnlyRow";
 import EditableRow from "./EditableRow";
-import { deleteRoundData, getGameData, getPlayers, savePlayers, saveRoundData, updateRoundData } from "../firebase";
+import { deleteRoundData, getGameData, getPlayers, resetGame, savePlayers, saveRoundData, updateRoundData } from "../firebase";
+import WinnerCup from './../assets/winner-cup.png';
 
 const NewGame = () => {
   const navigate = useNavigate();
@@ -55,6 +56,18 @@ const NewGame = () => {
       });
     });
     setPlayerScores(playerScoresTemp);
+
+    let lowScore = 350;
+    tempSavedPlayers?.forEach(player => {
+    // players?.forEach(player => {
+      if(playerScoresTemp[player] > 350) {
+        setGameOver(true);
+      }
+      if(playerScoresTemp[player] < lowScore) {
+        lowScore = playerScoresTemp[player];
+        setWinner(player);
+      }
+    });
   }, []);
 
   const handleAddPlayerChange = (event) => {
@@ -74,10 +87,22 @@ const NewGame = () => {
     setPlayers(players);
   };
 
-  const savePlayersHandler = (event) => {
+  const savePlayersHandler = async (event) => {
     event.preventDefault();
+    
+    await savePlayers(players);
 
-    savePlayers(players);
+    const savedPlayers = await getPlayers();
+    const tempSavedPlayers = [];
+    if(savedPlayers.length > 0) {
+      setAllPlayersAdded(true);
+      if(players?.length != savedPlayers?.length) {
+        Object.keys(savedPlayers[0]).map((key) => {
+          tempSavedPlayers[key] = savedPlayers[0][key];
+        });
+        setPlayers(tempSavedPlayers);
+      }
+    }
   }
 
   const [editRoundData, setEditRoundData] = useState({
@@ -147,6 +172,8 @@ const NewGame = () => {
         setWinner(player);
       }
     });
+
+    window.location.reload();
   };
 
   const handleEditRoundSubmit = (event) => {
@@ -199,6 +226,17 @@ const NewGame = () => {
 
     setRounds(newRounds);
     deleteRoundData(roundId);
+  };
+
+  const resetGameHandler = () => {
+    resetGame();
+  };
+
+  const getPlayerTurn = () => {
+    if(rounds?.length == 0 || rounds?.length % players?.length == 0) {
+      return players[players?.length - 1];
+    }
+    return players[(rounds?.length % players?.length) - 1];
   };
 
   return (
@@ -293,8 +331,13 @@ const NewGame = () => {
         </div>
       }
       {
-        gameOver && winner + ' won the game!!'
+        gameOver && 
+        <div>
+          <div>{winner} won the game!!<img src={WinnerCup} style={{width: '50px', height: '50px'}}></img></div>
+          <button className="dashboard_btn" onClick={resetGameHandler}>Reset</button>
+        </div>
       }
+      <div>{ players?.length > 0 && getPlayerTurn() + '\'s Turn' }</div>
       <button className="dashboard_btn" onClick={() => navigate("/dashboard")}>Dashboard</button>
       {/* <button className="dashboard_btn" onClick={() => navigate("/newgame")}>Refresh</button> */}
     </div>
