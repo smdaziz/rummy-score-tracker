@@ -1,0 +1,2 @@
+.app-container{display:flex;flex-direction:column;grid-gap:10px;gap:10px;padding:1rem}table{border-collapse:collapse;width:100%;border:1px solid;overflow-x:auto}td,th{border:1px solid #fff;text-align:left;padding:8px;font-size:32px}th{background-color:#75c9fa}td{background-color:#cdebfd}form{display:flex;grid-gap:5px;gap:5px}form td:first-child{display:flex;justify-content:space-evenly}form *{font-size:28px}
+/*# sourceMappingURL=main.109d78a0.chunk.css.map */
