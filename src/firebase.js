@@ -120,6 +120,34 @@ const logout = () => {
   signOut(auth);
 };
 
+const savePlayers = async (players) => {
+  try {
+    let playersObj = {};
+    Object.assign(playersObj, players);
+    await addDoc(collection(db, "players"), playersObj);
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
+
+const getPlayers = async () => {
+  const players = [];
+  try {
+    const q = query(collection(db, "players"));
+    const docs = await getDocs(q);
+    docs.forEach((doc) => {
+      console.log(doc.data());
+      players.push(doc.data());
+    })
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  } finally {
+    return players;
+  }
+};
+
 const saveRoundData = async (roundData) => {
   try {
     await addDoc(collection(db, "game"), roundData);
@@ -162,9 +190,9 @@ const getGameData = async () => {
   try {
     const q = query(collection(db, "game"));
     const docs = await getDocs(q);
-    docs.forEach((d) => {
-      console.log(d.data());
-      gameData.push(d.data());
+    docs.forEach((doc) => {
+      console.log(doc.data());
+      gameData.push(doc.data());
     })
   } catch (err) {
     console.error(err);
@@ -182,6 +210,8 @@ export {
   registerWithEmailAndPassword,
   sendPasswordReset,
   logout,
+  savePlayers,
+  getPlayers,
   saveRoundData,
   updateRoundData,
   deleteRoundData,

@@ -8,6 +8,8 @@
 table {
   border-collapse: collapse;
   width: 100%;
+  border: 1px solid;
+  overflow-x: auto;
 }
 
 th,
@@ -31,7 +33,8 @@ form {
   gap: 5px;
 }
 
-form td:last-child {
+/* form td:last-child { */
+form td:first-child {
   display: flex;
   justify-content: space-evenly;
 }

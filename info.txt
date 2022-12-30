@@ -35,3 +35,5 @@ GitHub Pages Deployment : https://github.com/gitname/react-gh-pages
 YouTube React Table Ref : https://www.youtube.com/watch?v=dYjdzpZv5yc
 GitHub Code Ref : https://github.com/chrisblakely01/react-creating-a-table/blob/main/src/App.js
 
+Making SPA Refresh work on GitHub Pages : https://github.com/rafgraph/spa-github-pages
+

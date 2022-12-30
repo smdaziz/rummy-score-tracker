@@ -7,6 +7,12 @@ const EditableRow = ({
 }) => {
   return (
     <tr>
+      <td>
+        <button type="submit">Save</button>
+        <button type="button" onClick={handleCancelClick}>
+          Cancel
+        </button>
+      </td>
       {Object.keys(editRoundData)?.map((key, idx) => {
         if(key !== 'id') {
           return (
@@ -25,12 +31,6 @@ const EditableRow = ({
           );
         }
       })}
-      <td>
-        <button type="submit">Save</button>
-        <button type="button" onClick={handleCancelClick}>
-          Cancel
-        </button>
-      </td>
     </tr>
   );
 };

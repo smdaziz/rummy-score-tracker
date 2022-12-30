@@ -1,13 +1,8 @@
 import React from "react";
 
-const ReadOnlyRow = ({ round, handleEditClick, handleDeleteClick }) => {
+const ReadOnlyRow = ({ round, players, handleEditClick, handleDeleteClick }) => {
   return (
     <tr>
-      {Object.keys(round)?.map(key => {
-        if(key !== 'id') {
-          return (<td>{round[key]}</td>);
-        }
-      })}
       <td>
         <button
           type="button"
@@ -19,6 +14,14 @@ const ReadOnlyRow = ({ round, handleEditClick, handleDeleteClick }) => {
           Delete
         </button>
       </td>
+      {
+        // Object.keys(round)?.map(key => {
+        //   if(key !== 'id') {
+        //     return (<td>{round[key]}</td>);
+        //   }
+        // })
+        players?.map(player => <td>{round[player]}</td>)
+      }
     </tr>
   );
 };
