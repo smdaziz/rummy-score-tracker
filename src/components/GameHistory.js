@@ -5,6 +5,7 @@ import { getGameHistoryData } from "../firebase";
 import "./NewGame.css";
 
 import WinnerCup from './../assets/winner-cup.png';
+import PieChart from "./PieChart";
 
 const GameHistory = () => {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ const GameHistory = () => {
   const [gameHistory, setGameHistory] = useState([]);
 
   const [playerWins, setPlayerWins] = useState([]);
+
+  const [chartData, setChartData] = useState([])
 
   useEffect(async () => {
     const gameHistory = await getGameHistoryData();
@@ -27,9 +30,16 @@ const GameHistory = () => {
     });
     
     const playerWins = [];
+    const chartData = [];
     Object?.keys(playerWinCount)?.forEach(player => {
       playerWins.push({playerName: player, wins: playerWinCount[player]});
+      chartData.push({
+        label: player,
+        value: playerWinCount[player]
+      });
     });
+
+    setChartData(chartData);
 
     playerWins?.sort((p1, p2) => p2?.wins - p1?.wins);
 
@@ -83,6 +93,11 @@ const GameHistory = () => {
                 )}
               </tbody>
           </table>
+          <PieChart
+            data={chartData}
+            outerRadius={200}
+            innerRadius={0}
+          />
         </div>
       }
       <button className="dashboard_btn" onClick={() => navigate("/dashboard")}>Dashboard</button>
