@@ -120,6 +120,34 @@ const logout = () => {
   signOut(auth);
 };
 
+const registerPlayer = async (player) => {
+  try {
+    // let playersObj = {};
+    // Object.assign(playersObj, players);
+    await addDoc(collection(db, "registered_players"), player);
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
+
+const getRegisteredPlayers = async () => {
+  const players = [];
+  try {
+    const q = query(collection(db, "registered_players"));
+    const docs = await getDocs(q);
+    docs.forEach((doc) => {
+      players.push(doc?.data()?.name);
+    });
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  } finally {
+    players?.sort((p1, p2) => p1?.id - p2?.id);
+    return players;
+  }
+};
+
 const savePlayers = async (players) => {
   try {
     let playersObj = {};
@@ -278,6 +306,29 @@ const saveGameHistory = async() => {
   }
 };
 
+const getGameHistoryData = async () => {
+  const gameHistoryData = [];
+  try {
+    const q = query(collection(db, "game_history"));
+    const docs = await getDocs(q);
+    docs.forEach((doc) => {
+      const game = doc.data();
+      const gameDate = new Date(game?.utcDateMS);
+      gameHistoryData.push({
+        date: (gameDate.getMonth()+1) + "/" + gameDate.getDate() + "/" + gameDate.getFullYear(),
+        rounds: game?.rounds?.length,
+        winner: game?.winner,
+        runner: game?.playerRanking?.[1]?.name
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  } finally {
+    return gameHistoryData;
+  }
+};
+
 export {
   auth,
   db,
@@ -286,11 +337,14 @@ export {
   registerWithEmailAndPassword,
   sendPasswordReset,
   logout,
+  registerPlayer,
+  getRegisteredPlayers,
   savePlayers,
   getPlayers,
   saveRoundData,
   updateRoundData,
   deleteRoundData,
   getGameData,
-  resetGame
+  resetGame,
+  getGameHistoryData
 };

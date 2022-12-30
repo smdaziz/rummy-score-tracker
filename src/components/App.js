@@ -7,6 +7,8 @@ import Register from "./Register";
 import Reset from "./Reset";
 import Dashboard from "./Dashboard";
 import NewGame from "./NewGame";
+import RegisterPlayer from "./RegisterPlayer";
+import GameHistory from "./GameHistory";
 
 function App() {
   return (
@@ -20,7 +22,9 @@ function App() {
               <Route exact path="/register" element={<Register />} />
               <Route exact path="/reset" element={<Reset />} />
               <Route exact path="/dashboard" element={<Dashboard />} />
+              <Route exact path="/registerplayer" element={<RegisterPlayer />} />
               <Route exact path="/newgame" element={<NewGame />} />
+              <Route exact path="/gamehistory" element={<GameHistory />} />
             </Routes>
           </AuthProvider>
         </Router>

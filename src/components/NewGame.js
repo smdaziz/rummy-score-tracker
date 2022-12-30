@@ -5,12 +5,13 @@ import { nanoid } from "nanoid";
 import "./NewGame.css";
 import ReadOnlyRow from "./ReadOnlyRow";
 import EditableRow from "./EditableRow";
-import { deleteRoundData, getGameData, getPlayers, resetGame, savePlayers, saveRoundData, updateRoundData } from "../firebase";
+import { deleteRoundData, getGameData, getPlayers, getRegisteredPlayers, resetGame, savePlayers, saveRoundData, updateRoundData } from "../firebase";
 import WinnerCup from './../assets/winner-cup.png';
 
 const NewGame = () => {
   const navigate = useNavigate();
 
+  const [registeredPlayers, setRegisteredPlayers] = useState([]);
   const [players, setPlayers] = useState([]);
   const [playerName, setPlayerName] = useState('');
 
@@ -26,6 +27,9 @@ const NewGame = () => {
   const [winner, setWinner] = useState('');
 
   useEffect(async () => {
+    const regsiteredPlayers = await getRegisteredPlayers();
+    setRegisteredPlayers(regsiteredPlayers);
+
     const gameData = await getGameData();
     setRounds(gameData);
     // const currentPlayers = [];
@@ -81,7 +85,7 @@ const NewGame = () => {
   const handleAddPlayerSubmit = (event) => {
     event.preventDefault();
 
-    players.push(playerName);
+    !players?.includes(playerName) && playerName && players.push(playerName);
     setPlayerName('');
 
     setPlayers(players);
@@ -243,19 +247,31 @@ const NewGame = () => {
     <div>
       {
         !allPlayersAdded && 
-        <div>
-          <h2>Add a Player</h2>
-          <form onSubmit={handleAddPlayerSubmit}>
-            <input
+        <div style={{display: 'flex', flexDirection: 'column'}}>
+          <h2>Select Player</h2>
+          <form style={{flexDirection: 'column'}} onSubmit={handleAddPlayerSubmit}>
+            {/* <input
               type="text"
               name="player"
               value={playerName}
               required="required"
               placeholder="Enter Player Name..."
               onChange={handleAddPlayerChange}
-            />
-            <button type="submit">Add Player</button>
-            <button onClick={savePlayersHandler}>Done</button>
+            /> */}
+            <div style={{display: 'flex', flexDirection: 'column'}} onChange={handleAddPlayerChange}>
+              {registeredPlayers?.map(player => 
+                <div style={{ marginRight: '10px' }}>
+                  <input
+                    type="radio"
+                    name="playerName"
+                    value={player}
+                  />
+                  {player}
+                </div>
+              )}
+            </div>
+            <button type="submit" style={{width: '150px'}}>Add Player</button>
+            <button style={{width: '150px'}} onClick={savePlayersHandler}>Start Game</button>
           </form>
         </div>
       }
@@ -333,7 +349,7 @@ const NewGame = () => {
       {
         gameOver && 
         <div>
-          <div>{winner} won the game!!<img src={WinnerCup} style={{width: '50px', height: '50px'}}></img></div>
+          <div>{winner} won the game!!<img src={WinnerCup} style={{width: '25px', height: '25px'}}></img></div>
           <button className="dashboard_btn" onClick={resetGameHandler}>Reset</button>
         </div>
       }
