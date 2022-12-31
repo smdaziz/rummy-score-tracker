@@ -315,12 +315,15 @@ const getGameHistoryData = async () => {
       const game = doc.data();
       const gameDate = new Date(game?.utcDateMS);
       gameHistoryData.push({
+        utcDateMS: game?.utcDateMS,
+        playerRanking: game?.playerRanking,
         date: (gameDate.getMonth()+1) + "/" + gameDate.getDate() + "/" + gameDate.getFullYear(),
         rounds: game?.rounds?.length,
         winner: game?.winner,
         runner: game?.playerRanking?.[1]?.name
       });
     });
+    gameHistoryData?.sort((game1, game2) => game2?.utcDateMS - game1?.utcDateMS);
   } catch (err) {
     console.error(err);
     alert(err.message);

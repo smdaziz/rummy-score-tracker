@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 
 function PieChart(props) {
   const {
+    name,
     data,
     outerRadius,
     innerRadius,
@@ -26,13 +27,13 @@ function PieChart(props) {
 
   function drawChart() {
     // Remove the old svg
-    d3.select('#pie-container')
+    d3.select('#pie-container'+'-'+name)
       .select('svg')
       .remove();
 
     // Create new svg
     const svg = d3
-      .select('#pie-container')
+      .select('#pie-container'+'-'+name)
       .append('svg')
       .attr('width', width)
       .attr('height', height)
@@ -75,7 +76,7 @@ function PieChart(props) {
       });
   }    
 
-  return <div id="pie-container" />;
+  return <div id={"pie-container"+"-"+name} />;
 }
 
 export default PieChart;
