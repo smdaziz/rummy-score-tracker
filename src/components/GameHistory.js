@@ -14,10 +14,12 @@ const GameHistory = () => {
 
   const [playerWinnerRunner, setPlayerWinnerRunner] = useState([]);
 
-  const [playerRanks, setPlayerRanks] = useState({});
+  const [gameWins, setGameWins] = useState([]);
+  const [playersParticipated, setPlayersParticipated] = useState([]);
 
   const [winnerChartData, setWinnerChartData] = useState([]);
   const [runnerChartData, setRunnerChartData] = useState([]);
+  const [outChartData, setOutChartData] = useState([]);
 
   useEffect(async () => {
     const gameHistory = await getGameHistoryData();
@@ -25,7 +27,8 @@ const GameHistory = () => {
 
     const playerWinnerCount = {};
     const playerRunnerCount = {};
-    const playerRanks = [];
+    const playerOutCount = {};
+    const gameWinsCount = {};
     gameHistory?.forEach(game => {
       //winner
       let winCount = playerWinnerCount[game?.winner];
@@ -41,11 +44,37 @@ const GameHistory = () => {
       } else {
         playerRunnerCount[game?.runner] = runnerCount+1;
       }
+      //out
+      const out = game?.playerRanking?.[game?.playerRanking?.length - 1]?.name;
+      let outCount = playerOutCount[out];
+      if(!outCount) {
+        playerOutCount[out] = 1;
+      } else {
+        playerOutCount[out] = outCount+1;
+      }
       //ranking
-      const playerRanking = {};
-      game?.playerRanking?.map((player, idx) => playerRanking[idx] = player?.name);
-      playerRanks.push(playerRanking);
+      const gameWin = [];
+      game?.playerRanking?.map((player, idx) => gameWin.push(player?.name));
+      let gameWinCount = gameWinsCount[gameWin];
+      if(!gameWinCount) {
+        gameWinsCount[gameWin] = 1;
+      } else {
+        gameWinsCount[gameWin] = gameWinCount+1;
+      }
     });
+    const gameWins = [];
+    const playersParticipated = [];
+    Object?.keys(gameWinsCount)?.map(g => {
+      const obj = {
+        players: g?.split(','),
+        wins: gameWinsCount[g]
+      };
+      obj?.players?.forEach(player => !playersParticipated.includes(player) && playersParticipated.push(player));
+      gameWins.push(obj);
+    });
+    gameWins?.sort((game1, game2) => game2.wins - game1.wins);
+    setGameWins(gameWins);
+    setPlayersParticipated(playersParticipated);
 
     const playerWinnerRunner = [];
     const winnerChartData = [];
@@ -60,10 +89,15 @@ const GameHistory = () => {
         label: player,
         value: playerRunnerCount[player]
       });
+      outChartData.push({
+        label: player,
+        value: playerOutCount[player]
+      });
     });
 
     setWinnerChartData(winnerChartData);
     setRunnerChartData(runnerChartData);
+    setOutChartData(outChartData);
 
     playerWinnerRunner?.sort((p1, p2) => p2?.winner - p1?.winner);
 
@@ -133,6 +167,40 @@ const GameHistory = () => {
             outerRadius={200}
             innerRadius={100}
           />
+          <div style={{marginTop: '50px'}}><b>Out Chart</b></div>
+          <PieChart
+            name='out'
+            data={outChartData}
+            outerRadius={200}
+            innerRadius={100}
+          />
+        </div>
+      }
+      {
+        <div style={{marginBottom: '50px'}}>
+          <div style={{marginBottom: '25px'}}><b>Win Combination</b></div>
+          <table>
+            <thead>
+              <tr>
+                {
+                  playersParticipated?.map((player, idx) => 
+                    <th>
+                      { idx == 0 ? 'Winner' : (idx == 1 ? 'Runner' : `Place - ${idx+1}`) }
+                    </th>
+                  )
+                }
+                <th>Wins</th>
+              </tr>
+            </thead>
+            <tbody>
+              {gameWins?.map(gameWin => 
+                <tr>
+                  {gameWin?.players?.map((player, idx) => <td>{player}</td> )}
+                  <td>{gameWin?.wins}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       }
       <button className="dashboard_btn" onClick={() => navigate("/dashboard")}>Dashboard</button>
