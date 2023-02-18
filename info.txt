@@ -40,3 +40,4 @@ GitHub Code Ref : https://github.com/chrisblakely01/react-creating-a-table/blob/
 
 Making SPA Refresh work on GitHub Pages : https://github.com/rafgraph/spa-github-pages
 
+Instruction/Command to deploy to GitHub Pages : npm run deploy
