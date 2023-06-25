@@ -72,6 +72,7 @@ const NewGame = () => {
         setWinner(player);
       }
     });
+
   }, []);
 
   const handleAddPlayerChange = (event) => {
@@ -298,9 +299,11 @@ const NewGame = () => {
                     ) : (
                       <ReadOnlyRow
                         round={round}
+                        roundIndex={idx}
                         players={players}
                         handleEditClick={handleEditClick}
                         handleDeleteClick={handleDeleteClick}
+                        rounds={rounds}
                       />
                     )}
                   </Fragment>
@@ -321,7 +324,7 @@ const NewGame = () => {
               <tbody>
                 <tr>
                   <td>
-                    <button type="submit" style={{width: '150px'}}>Add</button>
+                    <button type="submit" style={{width: '150px'}} disabled={!allPlayersAdded}>Add</button>
                   </td>
                   {players?.map((player, idx) => 
                     <td>
