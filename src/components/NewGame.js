@@ -278,7 +278,7 @@ const NewGame = () => {
               )}
             </div>
             <button type="submit" class="btn btn-success" style={{width: '150px'}}>Add Player</button>
-            <button class="btn btn-success" style={{width: '150px'}} onClick={savePlayersHandler}>Start Game</button>
+            <button class="btn btn-success" style={{width: '150px'}} onClick={savePlayersHandler} disabled={players.length <= 1}>Start Game</button>
           </form>
         </div>
       }

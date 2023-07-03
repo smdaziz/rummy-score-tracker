@@ -155,7 +155,7 @@ const GameHistory = () => {
         playerWinnerRunner?.length > 0 && 
         <div style={{width: '360px'}}>
           <div>{playerWinnerRunner[0]?.playerName} is All Time Winner <img src={WinnerCup} style={{width: '20px', height: '20px'}}></img></div>
-          <table class="table history-table">
+          <table class="table player-stats-table">
             <thead>
               <tr>
                 <th>Player Name</th>
