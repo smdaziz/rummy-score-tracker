@@ -36,18 +36,18 @@ function Dashboard() {
          <div>{name}</div>
          <div>{user?.email}</div>
          <div>
-           <button className="dashboard_btn" onClick={() => navigate("/registerplayer")}>Register Player</button>
+           <button class="btn btn-success my-1" onClick={() => navigate("/registerplayer")}>Register Player</button>
          </div>
          <div>
-          <button className="dashboard_btn" onClick={() => navigate("/newgame")}>
+          <button class="btn btn-success my-1" onClick={() => navigate("/newgame")}>
             { gameInProgress ? 'Continue Game' : 'New Game' }
           </button>
          </div>
          <div>
-           <button className="dashboard_btn" onClick={() => navigate("/gamehistory")}>Game History</button>
+           <button class="btn btn-success my-1" onClick={() => navigate("/gamehistory")}>Game History</button>
          </div>
          <div>
-          <button className="dashboard__btn" onClick={logout}>Logout</button>
+          <button class="btn btn-success my-1" onClick={logout}>Logout</button>
          </div>
        </div>
      </div>

@@ -271,8 +271,8 @@ const NewGame = () => {
                 </div>
               )}
             </div>
-            <button type="submit" style={{width: '150px'}}>Add Player</button>
-            <button style={{width: '100px'}} onClick={savePlayersHandler}>Start Game</button>
+            <button type="submit" class="btn btn-success" style={{width: '150px'}}>Add Player</button>
+            <button class="btn btn-success" style={{width: '100px'}} onClick={savePlayersHandler}>Start Game</button>
           </form>
         </div>
       }
@@ -324,7 +324,7 @@ const NewGame = () => {
               <tbody>
                 <tr>
                   <td>
-                    <button type="submit" style={{width: '150px'}} disabled={!allPlayersAdded}>Add</button>
+                    <button type="submit" class="btn btn-success" style={{width: '150px'}} disabled={!allPlayersAdded}>Add</button>
                   </td>
                   {players?.map((player, idx) => 
                     <td>
@@ -353,11 +353,11 @@ const NewGame = () => {
         gameOver && 
         <div>
           <div>{winner} won the game!!<img src={WinnerCup} style={{width: '25px', height: '25px'}}></img></div>
-          <button className="dashboard_btn" onClick={resetGameHandler}>Reset</button>
+          <button class="btn btn-success" onClick={resetGameHandler}>Reset</button>
         </div>
       }
       <div>{ players?.length > 0 && getPlayerTurn() + '\'s Turn' }</div>
-      <button className="dashboard_btn" onClick={() => navigate("/dashboard")}>Dashboard</button>
+      <button class="btn btn-success" onClick={() => navigate("/dashboard")}>Dashboard</button>
       {/* <button className="dashboard_btn" onClick={() => navigate("/newgame")}>Refresh</button> */}
     </div>
   );

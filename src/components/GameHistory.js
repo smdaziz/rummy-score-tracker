@@ -204,7 +204,7 @@ const GameHistory = () => {
           </table>
         </div>
       }
-      <button className="dashboard_btn" onClick={() => navigate("/dashboard")}>Dashboard</button>
+      <button class="btn btn-success" onClick={() => navigate("/dashboard")}>Dashboard</button>
     </div>
   );
 };

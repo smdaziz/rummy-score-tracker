@@ -49,13 +49,13 @@ const RegisterPlayer = () => {
             placeholder="Enter Player Name..."
             onChange={handleRegisterPlayerChange}
           />
-          <button type="submit">Register</button>
+          <button type="submit" class="btn btn-success">Register</button>
         </form>
       </div>
       {
         players?.length > 0 &&
-        <div>
-          <table class="table">
+        <div class="mt-2">
+          <table class="table register-player">
             <thead>
               <tr>
                 <th>Player Number</th>
@@ -73,7 +73,7 @@ const RegisterPlayer = () => {
           </table>
         </div>
       }
-      <button className="dashboard_btn" onClick={() => navigate("/dashboard")}>Dashboard</button>
+      <button class="btn btn-success" onClick={() => navigate("/dashboard")}>Dashboard</button>
     </div>
   );
 };

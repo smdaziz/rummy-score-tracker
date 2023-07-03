@@ -1,3 +1,7 @@
+html body {
+  background: #E3F2E6;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
@@ -118,5 +122,32 @@ form * {
 }
 
 .history-table tbody tr {
+  background-color: #F2F5EA;
+}
+
+.register-player-table {
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.register-player thead tr {
+  /* background-color: #009879; */
+  /* background-color: #2C363F; */
+  /* background-color: #abafb2; */
+  background-color: #5B9279;
+  color: #ffffff;
+  text-align: left;
+}
+
+.register-player th,
+.register-player td {
+    padding: 12px 15px;
+}
+
+.register-player tbody tr {
   background-color: #F2F5EA;
 }

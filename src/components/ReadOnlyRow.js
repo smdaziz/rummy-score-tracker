@@ -31,11 +31,12 @@ const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, hand
           <td>
             <button
               type="button"
+              class="btn btn-success mx-1"
               onClick={(event) => handleEditClick(event, round)}
             >
               Edit
             </button>
-            <button type="button" onClick={() => handleDeleteClick(round.id)}>
+            <button type="button" class="btn btn-warning" onClick={() => handleDeleteClick(round.id)}>
               Delete
             </button>
           </td>
@@ -51,11 +52,12 @@ const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, hand
       <td>
         <button
           type="button"
+          class="btn btn-success mx-1"
           onClick={(event) => handleEditClick(event, round)}
         >
           Edit
         </button>
-        <button type="button" onClick={() => handleDeleteClick(round.id)}>
+        <button type="button" class="btn btn-warning" onClick={() => handleDeleteClick(round.id)}>
           Delete
         </button>
       </td>
