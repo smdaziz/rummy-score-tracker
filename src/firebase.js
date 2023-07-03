@@ -320,7 +320,9 @@ const getGameHistoryData = async () => {
         date: (gameDate.getMonth()+1) + "/" + gameDate.getDate() + "/" + gameDate.getFullYear(),
         rounds: game?.rounds?.length,
         winner: game?.winner,
-        runner: game?.playerRanking?.[1]?.name
+        winnerScore: game?.playerRanking?.[0]?.total,
+        runner: game?.playerRanking?.[1]?.name,
+        runnerScore: game?.playerRanking?.[1]?.total
       });
     });
     gameHistoryData?.sort((game1, game2) => game2?.utcDateMS - game1?.utcDateMS);

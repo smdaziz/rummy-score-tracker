@@ -55,7 +55,7 @@ const RegisterPlayer = () => {
       {
         players?.length > 0 &&
         <div>
-          <table>
+          <table class="table">
             <thead>
               <tr>
                 <th>Player Number</th>

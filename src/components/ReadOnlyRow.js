@@ -21,7 +21,7 @@ const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, hand
   if (roundIndex > 0 && roundIndex % players.length === 0) {
     return (
       <>
-        <tr>
+        <tr class="round-total">
           <td><b>Round {roundIndex/players.length}</b></td>
           {
             players?.map(player => <td>{subRoundTotal?.[(roundIndex / players.length) - 1]?.[player]}</td>)

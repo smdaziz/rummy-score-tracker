@@ -272,7 +272,7 @@ const NewGame = () => {
               )}
             </div>
             <button type="submit" style={{width: '150px'}}>Add Player</button>
-            <button style={{width: '150px'}} onClick={savePlayersHandler}>Start Game</button>
+            <button style={{width: '100px'}} onClick={savePlayersHandler}>Start Game</button>
           </form>
         </div>
       }
@@ -280,7 +280,7 @@ const NewGame = () => {
         !gameOver && 
         <div className="app-container">
           <form onSubmit={handleEditRoundSubmit}>
-            <table>
+            <table class="table rummy-table">
               <thead>
                 <tr>
                   {players?.length > 0 && <th>Round</th>}
@@ -308,7 +308,7 @@ const NewGame = () => {
                     )}
                   </Fragment>
                 ))}
-                <tr>
+                <tr class="total">
                   <td><b>Total</b></td>
                   {
                     players?.map(player => <td>{playerScores[player]}</td>)
@@ -320,7 +320,7 @@ const NewGame = () => {
 
           {/* <h2>Enter Round Scores</h2> */}
           <form onSubmit={handleAddRoundSubmit}>
-            <table>
+            <table class="table">
               <tbody>
                 <tr>
                   <td>
@@ -330,7 +330,7 @@ const NewGame = () => {
                     <td>
                       <input
                         type="text"
-                        style={{width: '150px'}}
+                        style={{width: '100px'}}
                         name="fullName"
                         // value={addRoundData[idx]}
                         value={addRoundData[players[idx]]}

@@ -80,6 +80,7 @@ const GameHistory = () => {
     const winnerChartData = [];
     const runnerChartData = [];
     Object?.keys(playerWinnerCount)?.forEach(player => {
+    // playersParticipated?.forEach(player => {
       playerWinnerRunner.push({playerName: player, winner: playerWinnerCount[player], runner: playerRunnerCount[player]});
       winnerChartData.push({
         label: player,
@@ -109,7 +110,7 @@ const GameHistory = () => {
       {
         gameHistory?.length > 0 &&
         <div>
-          <table>
+          <table class="table history-table">
             <thead>
               <tr>
                 <th>Date</th>
@@ -123,8 +124,8 @@ const GameHistory = () => {
                   <tr>
                     <td>{game?.date}</td>
                     <td>{game?.rounds}</td>
-                    <td>{game?.winner}</td>
-                    <td>{game?.runner}</td>
+                    <td>{game?.winner} <br></br> ({game?.winnerScore})</td>
+                    <td>{game?.runner} <br></br> ({game?.runnerScore})</td>
                   </tr>
                 )}
               </tbody>
@@ -135,7 +136,7 @@ const GameHistory = () => {
         playerWinnerRunner?.length > 0 && 
         <div style={{width: '360px'}}>
           <div>{playerWinnerRunner[0]?.playerName} is All Time Winner <img src={WinnerCup} style={{width: '20px', height: '20px'}}></img></div>
-          <table>
+          <table class="table history-table">
             <thead>
               <tr>
                 <th>Player Name</th>
@@ -179,7 +180,7 @@ const GameHistory = () => {
       {
         <div style={{marginBottom: '50px'}}>
           <div style={{marginBottom: '25px'}}><b>Win Combination</b></div>
-          <table>
+          <table class="table history-table">
             <thead>
               <tr>
                 {
