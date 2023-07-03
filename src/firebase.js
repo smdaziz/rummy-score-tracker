@@ -306,6 +306,26 @@ const saveGameHistory = async() => {
   }
 };
 
+const discardGame = async() => {
+  try {
+    const gameQuery = query(collection(db, "game"));
+    const gameDocs = await getDocs(gameQuery);
+    gameDocs.forEach(async (d) => {
+      const docRef = doc(db, "game", d.id);
+      await deleteDoc(docRef);
+    });
+    const playersQuery = query(collection(db, "players"));
+    const playerDocs = await getDocs(playersQuery);
+    playerDocs.forEach(async (d) => {
+      const docRef = doc(db, "players", d.id);
+      await deleteDoc(docRef);
+    });
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
+
 const getGameHistoryData = async () => {
   const gameHistoryData = [];
   try {
@@ -351,5 +371,6 @@ export {
   deleteRoundData,
   getGameData,
   resetGame,
+  discardGame,
   getGameHistoryData
 };

@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 import "./NewGame.css";
 import ReadOnlyRow from "./ReadOnlyRow";
 import EditableRow from "./EditableRow";
-import { deleteRoundData, getGameData, getPlayers, getRegisteredPlayers, resetGame, savePlayers, saveRoundData, updateRoundData } from "../firebase";
+import { deleteRoundData, getGameData, getPlayers, getRegisteredPlayers, resetGame, discardGame, savePlayers, saveRoundData, updateRoundData } from "../firebase";
 import WinnerCup from './../assets/winner-cup.png';
 
 const NewGame = () => {
@@ -233,8 +233,14 @@ const NewGame = () => {
     deleteRoundData(roundId);
   };
 
-  const resetGameHandler = () => {
-    resetGame();
+  const resetGameHandler = async () => {
+    await resetGame();
+    navigate("/dashboard");
+  };
+
+  const discardGameHandler = async () => {
+    await discardGame();
+    navigate("/dashboard");
   };
 
   const getPlayerTurn = () => {
@@ -272,7 +278,7 @@ const NewGame = () => {
               )}
             </div>
             <button type="submit" class="btn btn-success" style={{width: '150px'}}>Add Player</button>
-            <button class="btn btn-success" style={{width: '100px'}} onClick={savePlayersHandler}>Start Game</button>
+            <button class="btn btn-success" style={{width: '150px'}} onClick={savePlayersHandler}>Start Game</button>
           </form>
         </div>
       }
@@ -353,7 +359,12 @@ const NewGame = () => {
         gameOver && 
         <div>
           <div>{winner} won the game!!<img src={WinnerCup} style={{width: '25px', height: '25px'}}></img></div>
-          <button class="btn btn-success" onClick={resetGameHandler}>Reset</button>
+          <div>
+            <button class="btn btn-success my-1" onClick={resetGameHandler} disabled={!allPlayersAdded}>Reset</button>
+          </div>
+          <div>
+            <button class="btn btn-warning my-1" onClick={discardGameHandler} disabled={!allPlayersAdded}>Discard</button>
+          </div>
         </div>
       }
       <div>{ players?.length > 0 && getPlayerTurn() + '\'s Turn' }</div>

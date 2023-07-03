@@ -27,6 +27,7 @@ const GameHistory = () => {
 
     const playerWinnerCount = {};
     const playerRunnerCount = {};
+    const playerGameCount = {};
     const playerOutCount = {};
     const gameWinsCount = {};
     gameHistory?.forEach(game => {
@@ -44,6 +45,15 @@ const GameHistory = () => {
       } else {
         playerRunnerCount[game?.runner] = runnerCount+1;
       }
+      //player game count
+      game?.playerRanking?.forEach(player => {
+        let gameCount = playerGameCount[player?.name];
+        if(!gameCount) {
+          playerGameCount[player?.name] = 1;
+        } else {
+          playerGameCount[player?.name] = gameCount+1;
+        }
+      });
       //out
       const out = game?.playerRanking?.[game?.playerRanking?.length - 1]?.name;
       let outCount = playerOutCount[out];
@@ -81,7 +91,16 @@ const GameHistory = () => {
     const runnerChartData = [];
     Object?.keys(playerWinnerCount)?.forEach(player => {
     // playersParticipated?.forEach(player => {
-      playerWinnerRunner.push({playerName: player, winner: playerWinnerCount[player], runner: playerRunnerCount[player]});
+      playerWinnerRunner.push({
+        playerName: player,
+        winner: playerWinnerCount[player],
+        runner: playerRunnerCount[player],
+        out: playerOutCount[player],
+        gamesPlayed: playerGameCount[player],
+        winPercentage: Math.round((playerWinnerCount[player] / playerGameCount[player]) * 100),
+        runnerPercentage: Math.round((playerRunnerCount[player] / playerGameCount[player]) * 100),
+        outPercentage: Math.round((playerOutCount[player] / playerGameCount[player]) * 100)
+      });
       winnerChartData.push({
         label: player,
         value: playerWinnerCount[player]
@@ -100,7 +119,7 @@ const GameHistory = () => {
     setRunnerChartData(runnerChartData);
     setOutChartData(outChartData);
 
-    playerWinnerRunner?.sort((p1, p2) => p2?.winner - p1?.winner);
+    playerWinnerRunner?.sort((p1, p2) => p2?.winPercentage - p1?.winPercentage);
 
     setPlayerWinnerRunner(playerWinnerRunner);
   }, []);
@@ -142,6 +161,11 @@ const GameHistory = () => {
                 <th>Player Name</th>
                 <th>Winner</th>
                 <th>Runner</th>
+                <th>Out</th>
+                <th>Games Played</th>
+                <th>Win %</th>
+                <th>Runner %</th>
+                <th>Out %</th>
               </tr>
             </thead>
             <tbody>
@@ -150,6 +174,11 @@ const GameHistory = () => {
                     <td>{player?.playerName}</td>
                     <td>{player?.winner}</td>
                     <td>{player?.runner}</td>
+                    <td>{player?.out}</td>
+                    <td>{player?.gamesPlayed}</td>
+                    <td>{player?.winPercentage}</td>
+                    <td>{player?.runnerPercentage}</td>
+                    <td>{player?.outPercentage}</td>
                   </tr>
                 )}
               </tbody>
