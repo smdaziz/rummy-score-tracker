@@ -230,7 +230,7 @@ const getGameData = async () => {
   }
 };
 
-const resetGame = async() => {
+const saveGame = async() => {
   try {
     await saveGameHistory();
     const gameQuery = query(collection(db, "game"));
@@ -370,7 +370,7 @@ export {
   updateRoundData,
   deleteRoundData,
   getGameData,
-  resetGame,
+  saveGame,
   discardGame,
   getGameHistoryData
 };

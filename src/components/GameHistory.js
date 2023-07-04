@@ -29,8 +29,8 @@ const GameHistory = () => {
 
     const playerWinnerCount = {};
     const playerRunnerCount = {};
-    const playerGameCount = {};
     const playerOutCount = {};
+    const playerGameCount = {};
     const gameWinsCount = {};
     const playerGameCombo = {};
     gameHistory?.forEach(game => {
@@ -48,6 +48,14 @@ const GameHistory = () => {
       } else {
         playerRunnerCount[game?.runner] = runnerCount+1;
       }
+      //out
+      const out = game?.playerRanking?.[game?.playerRanking?.length - 1]?.name;
+      let outCount = playerOutCount[out];
+      if(!outCount) {
+        playerOutCount[out] = 1;
+      } else {
+        playerOutCount[out] = outCount+1;
+      }
       //player game count
       game?.playerRanking?.forEach(player => {
         let gameCount = playerGameCount[player?.name];
@@ -57,14 +65,6 @@ const GameHistory = () => {
           playerGameCount[player?.name] = gameCount+1;
         }
       });
-      //out
-      const out = game?.playerRanking?.[game?.playerRanking?.length - 1]?.name;
-      let outCount = playerOutCount[out];
-      if(!outCount) {
-        playerOutCount[out] = 1;
-      } else {
-        playerOutCount[out] = outCount+1;
-      }
       //ranking
       const gameWin = [];
       game?.playerRanking?.map((player, idx) => gameWin.push(player?.name));
@@ -112,6 +112,8 @@ const GameHistory = () => {
       const playerWinnerCount = {};
       const playerRunnerCount = {};
       const playerOutCount = {};
+      const playerGameCount = {};
+      const playerWinnerRunner = [];
       playerGameComboObj?.games?.forEach(game => {
         //winner
         let winCount = playerWinnerCount[game?.winner];
@@ -135,14 +137,35 @@ const GameHistory = () => {
         } else {
           playerOutCount[out] = outCount+1;
         }
+        //player game count
+        game?.playerRanking?.forEach(player => {
+          let gameCount = playerGameCount[player?.name];
+          if(!gameCount) {
+            playerGameCount[player?.name] = 1;
+          } else {
+            playerGameCount[player?.name] = gameCount+1;
+          }
+        });
       });
       playerGameCombo[playerGameComboKey].playerWinnerCount = playerWinnerCount;
       playerGameCombo[playerGameComboKey].playerRunnerCount = playerRunnerCount;
       playerGameCombo[playerGameComboKey].playerOutCount = playerOutCount;
+      playerGameCombo[playerGameComboKey].playerGameCount = playerGameCount;
+      playerGameCombo[playerGameComboKey].playerWinnerRunner = [];
       playerGameCombo[playerGameComboKey].winnerChartData = [];
       playerGameCombo[playerGameComboKey].runnerChartData = [];
       playerGameCombo[playerGameComboKey].outChartData = [];
       playerGameComboKey?.split(',')?.forEach(player => {
+        playerGameCombo[playerGameComboKey].playerWinnerRunner.push({
+          playerName: player,
+          winner: playerWinnerCount[player],
+          runner: playerRunnerCount[player],
+          out: playerOutCount[player],
+          gamesPlayed: playerGameCount[player],
+          winPercentage: playerWinnerCount[player] ? Math.round((playerWinnerCount[player] / playerGameCount[player]) * 100) : 0,
+          runnerPercentage: playerRunnerCount[player] ? Math.round((playerRunnerCount[player] / playerGameCount[player]) * 100) : 0,
+          outPercentage: playerOutCount[player] ? Math.round((playerOutCount[player] / playerGameCount[player]) * 100) : 0
+        });
         playerGameCombo[playerGameComboKey].winnerChartData.push({
           label: player,
           value: playerGameCombo[playerGameComboKey].playerWinnerCount[player]
@@ -156,6 +179,7 @@ const GameHistory = () => {
           value: playerGameCombo[playerGameComboKey].playerOutCount[player]
         });
       });
+      playerGameCombo[playerGameComboKey].playerWinnerRunner?.sort((p1, p2) => p2?.winPercentage - p1?.winPercentage);
     });
     //player winner runner out counts by game combo - end
     const gameWins = [];
@@ -182,9 +206,9 @@ const GameHistory = () => {
         runner: playerRunnerCount[player],
         out: playerOutCount[player],
         gamesPlayed: playerGameCount[player],
-        winPercentage: Math.round((playerWinnerCount[player] / playerGameCount[player]) * 100),
-        runnerPercentage: Math.round((playerRunnerCount[player] / playerGameCount[player]) * 100),
-        outPercentage: Math.round((playerOutCount[player] / playerGameCount[player]) * 100)
+        winPercentage: playerWinnerCount[player] ? Math.round((playerWinnerCount[player] / playerGameCount[player]) * 100) : 0,
+        runnerPercentage: playerRunnerCount[player] ? Math.round((playerRunnerCount[player] / playerGameCount[player]) * 100) : 0,
+        outPercentage: playerOutCount[player] ? Math.round((playerOutCount[player] / playerGameCount[player]) * 100) : 0
       });
       winnerChartData.push({
         label: player,
@@ -226,7 +250,7 @@ const GameHistory = () => {
             <tbody>
                 {gameHistory?.map(game => 
                   <tr>
-                    <td>{game?.date}</td>
+                    <td><a href={game?.utcDateMS}>{game?.date}</a></td>
                     <td>{game?.rounds}</td>
                     <td>{game?.winner} <br></br> ({game?.winnerScore})</td>
                     <td>{game?.runner} <br></br> ({game?.runnerScore})</td>
@@ -238,7 +262,8 @@ const GameHistory = () => {
       }
       {
         playerWinnerRunner?.length > 0 && 
-        <div style={{width: '360px'}}>
+        // <div style={{width: '360px'}}>
+        <div>
           <div>{playerWinnerRunner[0]?.playerName} is All Time Winner <img src={WinnerCup} style={{width: '20px', height: '20px'}}></img></div>
           <table class="table player-stats-table">
             <thead>
@@ -257,9 +282,9 @@ const GameHistory = () => {
                 {playerWinnerRunner?.map(player => 
                   <tr>
                     <td>{player?.playerName}</td>
-                    <td>{player?.winner}</td>
-                    <td>{player?.runner}</td>
-                    <td>{player?.out}</td>
+                    <td>{player?.winner ? player?.winner : 0}</td>
+                    <td>{player?.runner ? player?.runner : 0}</td>
+                    <td>{player?.out ? player?.out : 0}</td>
                     <td>{player?.gamesPlayed}</td>
                     <td>{player?.winPercentage}</td>
                     <td>{player?.runnerPercentage}</td>
@@ -325,6 +350,34 @@ const GameHistory = () => {
                         })
                       }
                     </tbody>
+                  </table>
+                  <table class="table player-stats-table">
+                    <thead>
+                      <tr>
+                        <th>Player Name</th>
+                        <th>Winner</th>
+                        <th>Runner</th>
+                        <th>Out</th>
+                        <th>Games Played</th>
+                        <th>Win %</th>
+                        <th>Runner %</th>
+                        <th>Out %</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {playerGameCombo[playerGameComboKey]?.playerWinnerRunner?.map(player => 
+                          <tr>
+                            <td>{player?.playerName}</td>
+                            <td>{player?.winner ? player?.winner : 0}</td>
+                            <td>{player?.runner ? player?.runner : 0}</td>
+                            <td>{player?.out ? player?.out : 0}</td>
+                            <td>{player?.gamesPlayed}</td>
+                            <td>{player?.winPercentage}</td>
+                            <td>{player?.runnerPercentage}</td>
+                            <td>{player?.outPercentage}</td>
+                          </tr>
+                        )}
+                      </tbody>
                   </table>
                   <div style={{marginTop: '50px'}}><b>Winner Chart</b></div>
                   <PieChart

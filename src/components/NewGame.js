@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 import "./NewGame.css";
 import ReadOnlyRow from "./ReadOnlyRow";
 import EditableRow from "./EditableRow";
-import { deleteRoundData, getGameData, getPlayers, getRegisteredPlayers, resetGame, discardGame, savePlayers, saveRoundData, updateRoundData } from "../firebase";
+import { deleteRoundData, getGameData, getPlayers, getRegisteredPlayers, saveGame, discardGame, savePlayers, saveRoundData, updateRoundData } from "../firebase";
 import WinnerCup from './../assets/winner-cup.png';
 
 const NewGame = () => {
@@ -181,7 +181,7 @@ const NewGame = () => {
     window.location.reload();
   };
 
-  const handleEditRoundSubmit = (event) => {
+  const handleEditRoundSubmit = async (event) => {
     event.preventDefault();
 
     const editedRound = {
@@ -196,12 +196,12 @@ const NewGame = () => {
 
     const index = rounds.findIndex((round) => round.id === editRoundId);
 
-    // newRounds[index] = editedRound;
-    newRounds[players[index]] = editedRound;
+    newRounds[index] = editedRound;
+    // newRounds[players[index]] = editedRound;
 
     setRounds(newRounds);
     setEditRoundId(null);
-    updateRoundData(editedRound);
+    await updateRoundData(editedRound);
   };
 
   const handleEditClick = (event, round) => {
@@ -233,8 +233,8 @@ const NewGame = () => {
     deleteRoundData(roundId);
   };
 
-  const resetGameHandler = async () => {
-    await resetGame();
+  const saveGameHandler = async () => {
+    await saveGame();
     navigate("/dashboard");
   };
 
@@ -360,7 +360,7 @@ const NewGame = () => {
         <div>
           <div>{winner} won the game!!<img src={WinnerCup} style={{width: '25px', height: '25px'}}></img></div>
           <div>
-            <button class="btn btn-success my-1" onClick={resetGameHandler} disabled={!allPlayersAdded}>Reset</button>
+            <button class="btn btn-success my-1" onClick={saveGameHandler} disabled={!allPlayersAdded}>Save Game</button>
           </div>
           <div>
             <button class="btn btn-warning my-1" onClick={discardGameHandler} disabled={!allPlayersAdded}>Discard</button>
