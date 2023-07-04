@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/rummy-score-tracker/static/css/main.b943ee4c.chunk.css",
-    "main.js": "/rummy-score-tracker/static/js/main.e0a31494.chunk.js",
-    "main.js.map": "/rummy-score-tracker/static/js/main.e0a31494.chunk.js.map",
+    "main.js": "/rummy-score-tracker/static/js/main.b5741e7c.chunk.js",
+    "main.js.map": "/rummy-score-tracker/static/js/main.b5741e7c.chunk.js.map",
     "runtime-main.js": "/rummy-score-tracker/static/js/runtime-main.ea06dade.js",
     "runtime-main.js.map": "/rummy-score-tracker/static/js/runtime-main.ea06dade.js.map",
     "static/css/2.d8cb5cde.chunk.css": "/rummy-score-tracker/static/css/2.d8cb5cde.chunk.css",
@@ -19,6 +19,6 @@
     "static/css/2.d8cb5cde.chunk.css",
     "static/js/2.19760939.chunk.js",
     "static/css/main.b943ee4c.chunk.css",
-    "static/js/main.e0a31494.chunk.js"
+    "static/js/main.b5741e7c.chunk.js"
   ]
 }
