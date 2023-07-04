@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getGameHistoryData } from "../firebase";
@@ -16,6 +17,7 @@ const GameHistory = () => {
 
   const [gameWins, setGameWins] = useState([]);
   const [playersParticipated, setPlayersParticipated] = useState([]);
+  const [playerGameCombo, setPlayerGameCombo] = useState({});
 
   const [winnerChartData, setWinnerChartData] = useState([]);
   const [runnerChartData, setRunnerChartData] = useState([]);
@@ -30,6 +32,7 @@ const GameHistory = () => {
     const playerGameCount = {};
     const playerOutCount = {};
     const gameWinsCount = {};
+    const playerGameCombo = {};
     gameHistory?.forEach(game => {
       //winner
       let winCount = playerWinnerCount[game?.winner];
@@ -71,6 +74,37 @@ const GameHistory = () => {
       } else {
         gameWinsCount[gameWin] = gameWinCount+1;
       }
+      //player game combo
+      const playerGameComboKey = game?.playerRanking?.map(player => player?.name)?.sort()?.join(',');
+      let playerGameComboCount = playerGameCombo[playerGameComboKey];
+      if(!playerGameComboCount) {
+        playerGameCombo[playerGameComboKey] = {games: [game]};
+      } else {
+        playerGameCombo[playerGameComboKey]?.games?.push(game);
+      }
+      Object.keys(gameWinsCount).forEach(gameWin => {
+        const gameWinPlayers = gameWin?.split(',');
+        const gameWinPlayersSorted = gameWinPlayers?.sort();
+        const gameWinPlayersSortedKey = gameWinPlayersSorted?.join(',');
+        let gameWinsCountTemp = playerGameCombo[gameWinPlayersSortedKey]?.gameWinsCount?.gameWin;
+        if(!gameWinsCountTemp) {
+          if(!playerGameCombo[gameWinPlayersSortedKey]?.gameWinsCount) {
+            playerGameCombo[gameWinPlayersSortedKey]['gameWinsCount'] = {};
+          }
+        }
+        playerGameCombo[gameWinPlayersSortedKey].gameWinsCount[gameWin] = gameWinsCount[gameWin];
+        // Convert object to array of key-value pairs
+        const gameWinsCountEntries = Object.entries(playerGameCombo[gameWinPlayersSortedKey].gameWinsCount);
+        // Sort the array based on values
+        gameWinsCountEntries?.sort((g1, g2) => g2?.[1] - g1?.[1]);
+        // Convert sorted array back to object
+        const sortedGameWinsCount = gameWinsCountEntries?.reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+        // Assign the sorted object back to the original structure
+        playerGameCombo[gameWinPlayersSortedKey].gameWinsCount = sortedGameWinsCount;
+      });
     });
     const gameWins = [];
     const playersParticipated = [];
@@ -85,6 +119,7 @@ const GameHistory = () => {
     gameWins?.sort((game1, game2) => game2.wins - game1.wins);
     setGameWins(gameWins);
     setPlayersParticipated(playersParticipated);
+    setPlayerGameCombo(playerGameCombo);
 
     const playerWinnerRunner = [];
     const winnerChartData = [];
@@ -208,8 +243,44 @@ const GameHistory = () => {
       }
       {
         <div style={{marginBottom: '50px'}}>
-          <div style={{marginBottom: '25px'}}><b>Win Combination</b></div>
-          <table class="table history-table">
+          <div style={{marginBottom: '25px'}}><b>Win Combinations</b></div>
+          {
+            Object?.keys(playerGameCombo)?.map(playerGameComboKey => {
+              const playersParticipated = playerGameComboKey?.split(',');
+              return (
+                <div style={{marginBottom: '25px'}}>
+                  <div><b>Players: </b>{playerGameComboKey?.split(',')?.map(player => <li>{player}</li>)}</div>
+                  <table class="table history-table">
+                    <thead>
+                      <tr>
+                        {
+                          playersParticipated?.map((player, idx) => 
+                            <th>
+                              { idx == 0 ? 'Winner' : (idx == 1 ? 'Runner' : `Place - ${idx+1}`) }
+                            </th>
+                          )
+                        }
+                        <th>Wins</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        Object?.keys(playerGameCombo[playerGameComboKey]?.gameWinsCount)?.map(gameWin => {
+                          return (
+                            <tr>
+                              {gameWin?.split(',')?.map((player, idx) => <td>{player}</td> )}
+                              <td>{playerGameCombo[playerGameComboKey]?.gameWinsCount[gameWin]}</td>
+                            </tr>
+                          )
+                        })
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              )
+            })
+          }
+          {/* <table class="table history-table">
             <thead>
               <tr>
                 {
@@ -230,7 +301,7 @@ const GameHistory = () => {
                 </tr>
               )}
             </tbody>
-          </table>
+          </table> */}
         </div>
       }
       <button class="btn btn-success" onClick={() => navigate("/dashboard")}>Dashboard</button>
