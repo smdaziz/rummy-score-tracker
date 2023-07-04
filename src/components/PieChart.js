@@ -16,10 +16,12 @@ function PieChart(props) {
   const width = 2 * outerRadius + margin.left + margin.right;
   const height = 2 * outerRadius + margin.top + margin.bottom;
 
-  const colorScale = d3     
-    .scaleSequential()      
-    .interpolator(d3.interpolateCool)      
-    .domain([0, data.length]);
+  // const colorScale = d3     
+  //   .scaleSequential()      
+  //   .interpolator(d3.interpolateCool)      
+  //   .domain([0, data.length]);
+
+  const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
   useEffect(() => {
     drawChart();
@@ -69,7 +71,9 @@ function PieChart(props) {
       .attr('text-anchor', 'middle')
       .attr('alignment-baseline', 'middle')
       .text((d) => d.data.label)
-      .style('fill', (_, i) => colorScale(data.length - i))
+      // .style('fill', (_, i) => colorScale(data.length - i))
+      // .style('fill', 'white')
+      .style('fill', '#E3F2E6') // same as html body background color
       .attr('transform', (d) => {
         const [x, y] = arcGenerator.centroid(d);
         return `translate(${x}, ${y})`;

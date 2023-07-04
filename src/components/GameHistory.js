@@ -106,6 +106,58 @@ const GameHistory = () => {
         playerGameCombo[gameWinPlayersSortedKey].gameWinsCount = sortedGameWinsCount;
       });
     });
+    //player winner runner out counts by game combo - start
+    Object.keys(playerGameCombo)?.forEach(playerGameComboKey => {
+      const playerGameComboObj = playerGameCombo[playerGameComboKey];
+      const playerWinnerCount = {};
+      const playerRunnerCount = {};
+      const playerOutCount = {};
+      playerGameComboObj?.games?.forEach(game => {
+        //winner
+        let winCount = playerWinnerCount[game?.winner];
+        if(!winCount) {
+          playerWinnerCount[game?.winner] = 1;
+        } else {
+          playerWinnerCount[game?.winner] = winCount+1;
+        }
+        //runner
+        let runnerCount = playerRunnerCount[game?.runner];
+        if(!runnerCount) {
+          playerRunnerCount[game?.runner] = 1;
+        } else {
+          playerRunnerCount[game?.runner] = runnerCount+1;
+        }
+        //out
+        const out = game?.playerRanking?.[game?.playerRanking?.length - 1]?.name;
+        let outCount = playerOutCount[out];
+        if(!outCount) {
+          playerOutCount[out] = 1;
+        } else {
+          playerOutCount[out] = outCount+1;
+        }
+      });
+      playerGameCombo[playerGameComboKey].playerWinnerCount = playerWinnerCount;
+      playerGameCombo[playerGameComboKey].playerRunnerCount = playerRunnerCount;
+      playerGameCombo[playerGameComboKey].playerOutCount = playerOutCount;
+      playerGameCombo[playerGameComboKey].winnerChartData = [];
+      playerGameCombo[playerGameComboKey].runnerChartData = [];
+      playerGameCombo[playerGameComboKey].outChartData = [];
+      playerGameComboKey?.split(',')?.forEach(player => {
+        playerGameCombo[playerGameComboKey].winnerChartData.push({
+          label: player,
+          value: playerGameCombo[playerGameComboKey].playerWinnerCount[player]
+        });
+        playerGameCombo[playerGameComboKey].runnerChartData.push({
+          label: player,
+          value: playerGameCombo[playerGameComboKey].playerRunnerCount[player]
+        });
+        playerGameCombo[playerGameComboKey].outChartData.push({
+          label: player,
+          value: playerGameCombo[playerGameComboKey].playerOutCount[player]
+        });
+      });
+    });
+    //player winner runner out counts by game combo - end
     const gameWins = [];
     const playersParticipated = [];
     Object?.keys(gameWinsCount)?.map(g => {
@@ -122,8 +174,6 @@ const GameHistory = () => {
     setPlayerGameCombo(playerGameCombo);
 
     const playerWinnerRunner = [];
-    const winnerChartData = [];
-    const runnerChartData = [];
     Object?.keys(playerWinnerCount)?.forEach(player => {
     // playersParticipated?.forEach(player => {
       playerWinnerRunner.push({
@@ -218,7 +268,7 @@ const GameHistory = () => {
                 )}
               </tbody>
           </table>
-          <div style={{marginTop: '50px'}}><b>Winner Chart</b></div>
+          {/* <div style={{marginTop: '50px'}}><b>Winner Chart</b></div>
           <PieChart
             name='winner'
             data={winnerChartData}
@@ -238,14 +288,14 @@ const GameHistory = () => {
             data={outChartData}
             outerRadius={200}
             innerRadius={100}
-          />
+          /> */}
         </div>
       }
       {
         <div style={{marginBottom: '50px'}}>
           <div style={{marginBottom: '25px'}}><b>Win Combinations</b></div>
           {
-            Object?.keys(playerGameCombo)?.map(playerGameComboKey => {
+            Object?.keys(playerGameCombo)?.map((playerGameComboKey, idx) => {
               const playersParticipated = playerGameComboKey?.split(',');
               return (
                 <div style={{marginBottom: '25px'}}>
@@ -276,6 +326,27 @@ const GameHistory = () => {
                       }
                     </tbody>
                   </table>
+                  <div style={{marginTop: '50px'}}><b>Winner Chart</b></div>
+                  <PieChart
+                    name={`winner-${idx}`}
+                    data={playerGameCombo?.[playerGameComboKey]?.winnerChartData}
+                    outerRadius={200}
+                    innerRadius={100}
+                  />
+                  <div style={{marginTop: '50px'}}><b>Runner Chart</b></div>
+                  <PieChart
+                    name={`runner-${idx}`}
+                    data={playerGameCombo?.[playerGameComboKey]?.runnerChartData}
+                    outerRadius={200}
+                    innerRadius={100}
+                  />
+                  <div style={{marginTop: '50px'}}><b>Out Chart</b></div>
+                  <PieChart
+                    name={`out-${idx}`}
+                    data={playerGameCombo?.[playerGameComboKey]?.outChartData}
+                    outerRadius={200}
+                    innerRadius={100}
+                  />
                 </div>
               )
             })
