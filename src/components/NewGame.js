@@ -250,8 +250,35 @@ const NewGame = () => {
     return players[(rounds?.length % players?.length) - 1];
   };
 
+  const getWinningPlayer = () => {
+    let leadingPlayer = '';
+    let leadingScore = 351;
+    players?.forEach(player => {
+      if(playerScores[player] < leadingScore) {
+        leadingScore = playerScores[player];
+        leadingPlayer = player;
+      }
+    });
+    return leadingPlayer;
+  };
+
+  const getLosingPlayer = () => {
+    let leadingPlayer = '';
+    let leadingScore = 0;
+    players?.forEach(player => {
+      if(playerScores[player] > leadingScore) {
+        leadingScore = playerScores[player];
+        leadingPlayer = player;
+      }
+    });
+    return leadingPlayer;
+  };
+
   return (
     <div>
+      <div><b>Dealer:</b> { players?.length > 0 && getPlayerTurn() }</div>
+      <div><b>Winning:</b> { getWinningPlayer() ?? 'TBD' } <img src={WinnerCup} style={{width: '20px', height: '20px'}}></img> </div>
+      <div><b>Losing:</b> { getLosingPlayer() ?? 'TBD' }</div>
       {
         !allPlayersAdded && 
         <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -367,7 +394,6 @@ const NewGame = () => {
           </div>
         </div>
       }
-      <div>{ players?.length > 0 && getPlayerTurn() + '\'s Turn' }</div>
       <button class="btn btn-success" onClick={() => navigate("/dashboard")}>Dashboard</button>
       {/* <button className="dashboard_btn" onClick={() => navigate("/newgame")}>Refresh</button> */}
     </div>

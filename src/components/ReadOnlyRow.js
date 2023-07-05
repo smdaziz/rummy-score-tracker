@@ -44,7 +44,18 @@ const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, hand
             : <td>{roundIndex + 1}</td>
           }
           {
-            players?.map(player => <td>{round[player]}</td>)
+            players?.map(player => {
+              const points = Number(round[player]);
+              const style = {};
+              if (points <= 25) {
+                style['color'] = 'green';
+              } else if (points > 25 && points <= 50) {
+                style['color'] = 'orange';
+              } else if (points > 50) {
+                style['color'] = 'red';
+              }
+              return <td style={style}>{round[player]}</td>;
+            })
           }
         </tr>
       </>
@@ -74,7 +85,18 @@ const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, hand
         //     return (<td>{round[key]}</td>);
         //   }
         // })
-        players?.map(player => <td>{round[player]}</td>)
+        players?.map(player => {
+          const points = Number(round[player]);
+          const style = {};
+          if (points <= 25) {
+            style['color'] = 'green';
+          } else if (points > 25 && points <= 50) {
+            style['color'] = 'orange';
+          } else if (points > 50) {
+            style['color'] = 'red';
+          }
+          return <td style={style}>{round[player]}</td>;
+        })
       }
     </tr>
   );
