@@ -250,7 +250,7 @@ const GameHistory = () => {
             <tbody>
                 {gameHistory?.map(game => 
                   <tr>
-                    <td><a href={game?.utcDateMS}>{game?.date}</a></td>
+                    <td><a href={`/rummy-score-tracker/gamehistory/${game?.utcDateMS}`}>{game?.date}</a></td>
                     <td>{game?.rounds}</td>
                     <td>{game?.winner} <br></br> ({game?.winnerScore})</td>
                     <td>{game?.runner} <br></br> ({game?.runnerScore})</td>
@@ -318,13 +318,13 @@ const GameHistory = () => {
       }
       {
         <div style={{marginBottom: '50px'}}>
-          <div style={{marginBottom: '25px'}}><b>Win Combinations</b></div>
+          <div style={{marginBottom: '25px', marginTop: '25px'}}><b>Win Combinations</b></div>
           {
             Object?.keys(playerGameCombo)?.map((playerGameComboKey, idx) => {
               const playersParticipated = playerGameComboKey?.split(',');
               return (
                 <div style={{marginBottom: '25px'}}>
-                  <div><b>Players: </b>{playerGameComboKey?.split(',')?.map(player => <li>{player}</li>)}</div>
+                  <div><b>Players</b>{playerGameComboKey?.split(',')?.map(player => <li>{player}</li>)}</div>
                   <table class="table history-table">
                     <thead>
                       <tr>

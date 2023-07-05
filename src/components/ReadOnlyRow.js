@@ -1,6 +1,6 @@
 import React from "react";
 
-const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, handleDeleteClick }) => {
+const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, handleDeleteClick, oldGame }) => {
   //calculate subround total - start
   const subRoundTotal = [];
   let playerSubScores = {};
@@ -28,18 +28,22 @@ const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, hand
           }
         </tr>
         <tr>
-          <td>
-            <button
-              type="button"
-              class="btn btn-success mx-1"
-              onClick={(event) => handleEditClick(event, round)}
-            >
-              Edit
-            </button>
-            <button type="button" class="btn btn-warning" onClick={() => handleDeleteClick(round.id)}>
-              Delete
-            </button>
-          </td>
+          {
+            !oldGame ? 
+            <td>
+              <button
+                type="button"
+                class="btn btn-success mx-1"
+                onClick={(event) => handleEditClick(event, round)}
+              >
+                Edit
+              </button>
+              <button type="button" class="btn btn-warning" onClick={() => handleDeleteClick(round.id)}>
+                Delete
+              </button>
+            </td>
+            : <td>{roundIndex + 1}</td>
+          }
           {
             players?.map(player => <td>{round[player]}</td>)
           }
@@ -49,18 +53,22 @@ const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, hand
   }
   return (
     <tr>
-      <td>
-        <button
-          type="button"
-          class="btn btn-success mx-1"
-          onClick={(event) => handleEditClick(event, round)}
-        >
-          Edit
-        </button>
-        <button type="button" class="btn btn-warning" onClick={() => handleDeleteClick(round.id)}>
-          Delete
-        </button>
-      </td>
+      {
+        !oldGame ?
+        <td>
+          <button
+            type="button"
+            class="btn btn-success mx-1"
+            onClick={(event) => handleEditClick(event, round)}
+          >
+            Edit
+          </button>
+          <button type="button" class="btn btn-warning" onClick={() => handleDeleteClick(round.id)}>
+            Delete
+          </button>
+        </td>
+        : <td>{roundIndex + 1}</td>
+      }
       {
         // Object.keys(round)?.map(key => {
         //   if(key !== 'id') {

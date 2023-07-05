@@ -339,6 +339,7 @@ const getGameHistoryData = async () => {
         playerRanking: game?.playerRanking,
         date: (gameDate.getMonth()+1) + "/" + gameDate.getDate() + "/" + gameDate.getFullYear(),
         rounds: game?.rounds?.length,
+        roundsData: game?.rounds,
         winner: game?.winner,
         winnerScore: game?.playerRanking?.[0]?.total,
         runner: game?.playerRanking?.[1]?.name,

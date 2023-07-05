@@ -9,6 +9,7 @@ import Dashboard from "./Dashboard";
 import NewGame from "./NewGame";
 import RegisterPlayer from "./RegisterPlayer";
 import GameHistory from "./GameHistory";
+import OldGame from "./OldGame";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route exact path="/registerplayer" element={<RegisterPlayer />} />
               <Route exact path="/newgame" element={<NewGame />} />
               <Route exact path="/gamehistory" element={<GameHistory />} />
+              <Route exact path="/gamehistory/:gameId" element={<OldGame />} />
             </Routes>
           </AuthProvider>
         </Router>
