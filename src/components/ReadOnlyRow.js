@@ -16,7 +16,6 @@ const ReadOnlyRow = ({ round, roundIndex, players, rounds, handleEditClick, hand
       });
     }
   }
-  console.log('subRoundTotal', subRoundTotal);
   //calculate subround total - end
   if (roundIndex > 0 && roundIndex % players.length === 0) {
     return (
