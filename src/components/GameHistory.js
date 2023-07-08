@@ -293,7 +293,7 @@ const GameHistory = () => {
                 )}
               </tbody>
           </table>
-          {/* <div style={{marginTop: '50px'}}><b>Winner Chart</b></div>
+          <div style={{marginTop: '50px'}}><b>Winner Chart</b></div>
           <PieChart
             name='winner'
             data={winnerChartData}
@@ -313,7 +313,7 @@ const GameHistory = () => {
             data={outChartData}
             outerRadius={200}
             innerRadius={100}
-          /> */}
+          />
         </div>
       }
       {
