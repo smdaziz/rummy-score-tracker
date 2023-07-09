@@ -277,8 +277,8 @@ const NewGame = () => {
   return (
     <div>
       <div><b>Dealer:</b> { players?.length > 0 && getPlayerTurn() }</div>
-      <div><b>Winning:</b> { getWinningPlayer() ?? 'TBD' } <img src={WinnerCup} style={{width: '20px', height: '20px'}}></img> </div>
-      <div><b>Losing:</b> { getLosingPlayer() ?? 'TBD' }</div>
+      <div><b>Least:</b> { getWinningPlayer() ?? 'TBD' } <img src={WinnerCup} style={{width: '20px', height: '20px'}}></img> </div>
+      <div><b>Highest:</b> { getLosingPlayer() ?? 'TBD' }</div>
       {
         !allPlayersAdded && 
         <div style={{display: 'flex', flexDirection: 'column'}}>
