@@ -10,6 +10,12 @@ const OldGame = (props) => {
   const [game, setGame] = useState({});
   const [players, setPlayers] = useState([]);
 
+  const [rummys, setRummys] = useState({});
+  const [drops, setDrops] = useState({});
+  const [outs, setOuts] = useState({});
+  const [seventyFives, setSeventyFives] = useState({});
+  const [playerStats, setPlayerStats] = useState({});
+
   const gameId = useParams().gameId;
 
   useEffect(async () => {
@@ -20,11 +26,45 @@ const OldGame = (props) => {
     const players = game?.playerRanking?.map(player => player.name);
     setGame(game);
     setPlayers(players);
+
+    const playerStats = {};
+    players?.forEach(player => {
+      playerStats[player] = {
+        rummys: 0,
+        drops: 0,
+        outs: 0,
+        seventyFives: 0
+      }
+    });
+
+    game?.roundsData?.forEach(round => {
+      players?.forEach(player => {
+        const points = Number(round[player]);
+        if (points === 0) {
+          playerStats[player].rummys += 1;
+        } else if (points === 25) {
+          playerStats[player].drops += 1;
+        } else if (points > 25) {
+          playerStats[player].outs += 1;
+        }
+        if (points == 75) {
+          playerStats[player].seventyFives += 1;
+        }
+      });
+    });
+    console.log(playerStats);
+    setPlayerStats(playerStats);
   }, []);
 
   return (
     <div>
-      <h2>Game Played on {game?.date}</h2>
+      <br></br>
+      <button class="btn btn-success my-1" onClick={() => navigate("/dashboard")}>Dashboard</button>
+      <br></br>
+      <button class="btn btn-success my-1" onClick={() => navigate("/gamehistory")}>Game History</button>
+      <br></br>
+      <button class="btn btn-success my-1" onClick={() => navigate("/gamestats")}>Game Stats</button>
+      <h2 className="my-3" style={{color: 'green'}}>Game Played on {game?.date}</h2>
       <h4>Players</h4>
       <ul>
         {
@@ -34,7 +74,7 @@ const OldGame = (props) => {
       <h4>Rounds Played: {game?.rounds}</h4>
       <h4>Winner: {game?.winner} <img src={WinnerCup} style={{width: '20px', height: '20px'}}></img></h4>
       <h4>Runner: {game?.runner}</h4>
-      <h4>Game Details</h4>
+      <h4 style={{color: 'green'}}>Game Details</h4>
       <table class="table rummy-table">
         <thead>
           <tr>
@@ -62,9 +102,31 @@ const OldGame = (props) => {
           </tr>
         </tbody>
       </table>
-      <button class="btn btn-success my-1" onClick={() => navigate("/gamehistory")}>Game History</button>
-      <br></br>
-      <button class="btn btn-success my-1" onClick={() => navigate("/dashboard")}>Dashboard</button>
+      <h4 style={{color: 'green'}}>Player Round Stats</h4>
+      <table class="table rummy-table">
+        <thead>
+          <tr>
+            <th>Player Name</th>
+            <th>Rummys</th>
+            <th>Drops</th>
+            <th>Outs</th>
+            <th>75s</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            players?.map(player => (
+              <tr>
+                <td>{player}</td>
+                <td>{playerStats[player]?.rummys}</td>
+                <td>{playerStats[player]?.drops}</td>
+                <td>{playerStats[player]?.outs}</td>
+                <td>{playerStats[player]?.seventyFives}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
     </div>
   );
 };

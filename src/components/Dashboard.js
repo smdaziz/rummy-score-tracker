@@ -47,6 +47,9 @@ function Dashboard() {
            <button class="btn btn-success my-1" onClick={() => navigate("/gamehistory")}>Game History</button>
          </div>
          <div>
+           <button class="btn btn-success my-1" onClick={() => navigate("/gamestats")}>Game Stats</button>
+         </div>
+         <div>
           <button class="btn btn-success my-1" onClick={logout}>Logout</button>
          </div>
        </div>

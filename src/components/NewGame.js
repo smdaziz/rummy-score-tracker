@@ -2,11 +2,12 @@ import React, { useState, Fragment, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { nanoid } from "nanoid";
-import "./NewGame.css";
 import ReadOnlyRow from "./ReadOnlyRow";
 import EditableRow from "./EditableRow";
 import { deleteRoundData, getGameData, getPlayers, getRegisteredPlayers, saveGame, discardGame, savePlayers, saveRoundData, updateRoundData } from "../firebase";
+
 import WinnerCup from './../assets/winner-cup.png';
+import "./NewGame.css";
 
 const NewGame = () => {
   const navigate = useNavigate();
@@ -276,9 +277,13 @@ const NewGame = () => {
 
   return (
     <div>
-      <div><b>Dealer:</b> { players?.length > 0 && getPlayerTurn() }</div>
-      <div><b>Least:</b> { getWinningPlayer() ?? 'TBD' } <img src={WinnerCup} style={{width: '20px', height: '20px'}}></img> </div>
-      <div><b>Highest:</b> { getLosingPlayer() ?? 'TBD' }</div>
+      { allPlayersAdded && 
+        <>
+          <div><b>Dealer:</b> { players?.length > 0 && getPlayerTurn() }</div>
+          <div><b>Least:</b> { getWinningPlayer() ?? 'TBD' } <img src={WinnerCup} style={{width: '20px', height: '20px'}}></img> </div>
+          <div><b>Highest:</b> { getLosingPlayer() ?? 'TBD' }</div>
+        </>
+      }
       {
         !allPlayersAdded && 
         <div style={{display: 'flex', flexDirection: 'column'}}>

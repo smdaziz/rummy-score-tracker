@@ -180,3 +180,45 @@ form * {
 .player-stats-table tbody tr {
   background-color: #F2F5EA;
 }
+
+/* accordion changes */
+.accordion {
+  /* background-color: #eee; */
+  /* color: #444; */
+  background-color: #5B9279;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: 0.4s;
+}
+
+.active, .accordion:hover {
+  /* background-color: #ccc; */
+  background-color: #5B9279;
+}
+
+.panel {
+  /* padding: 0 18px; */
+  display: none;
+  /* background-color: white; */
+  /* overflow: hidden; */
+}
+
+.accordion:before {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  /* font-size: 13px; */
+  /* color: #777; */
+  color: white;
+  /* float: right; */
+  float: left;
+  /* margin-left: 5px; */
+  margin-right: 10px;
+}
+
+.active:before {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
