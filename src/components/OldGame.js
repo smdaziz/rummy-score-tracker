@@ -10,10 +10,6 @@ const OldGame = (props) => {
   const [game, setGame] = useState({});
   const [players, setPlayers] = useState([]);
 
-  const [rummys, setRummys] = useState({});
-  const [drops, setDrops] = useState({});
-  const [outs, setOuts] = useState({});
-  const [seventyFives, setSeventyFives] = useState({});
   const [playerStats, setPlayerStats] = useState({});
 
   const gameId = useParams().gameId;
@@ -44,7 +40,7 @@ const OldGame = (props) => {
           playerStats[player].rummys += 1;
         } else if (points === 25) {
           playerStats[player].drops += 1;
-        } else if (points > 25) {
+        } else if (points > 25 && points < 75) {
           playerStats[player].outs += 1;
         }
         if (points == 75) {

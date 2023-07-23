@@ -186,6 +186,38 @@ const GameStats = () => {
       gameWins.push(obj);
     });
     gameWins?.sort((game1, game2) => game2.wins - game1.wins);
+    //player stats by game combo - start
+    Object?.keys(playerGameCombo)?.forEach(playerGameComboKey => {
+      const playerGameComboObj = playerGameCombo[playerGameComboKey];
+      const playerStats = {};
+      playerGameComboKey.split(',')?.forEach(player => {
+        playerStats[player] = {
+          rummys: 0,
+          drops: 0,
+          outs: 0,
+          seventyFives: 0
+        }
+      });
+      playerGameComboObj?.games?.forEach(game => {
+        playersParticipated?.forEach(player => {
+          game?.roundsData?.forEach(round => {
+            const points = Number(round[player]);
+            if (points === 0) {
+              playerStats[player].rummys += 1;
+            } else if (points === 25) {
+              playerStats[player].drops += 1;
+            } else if (points > 25 && points < 75) {
+              playerStats[player].outs += 1;
+            }
+            if (points == 75) {
+              playerStats[player].seventyFives += 1;
+            }
+          });
+        });
+      });
+      playerGameCombo[playerGameComboKey].playerStats = playerStats;
+    });
+    //player stats by game combo - end
     setPlayerGameCombo(playerGameCombo);
 
     const playerWinnerRunner = [];
@@ -313,6 +345,7 @@ const GameStats = () => {
           {
             Object?.keys(playerGameCombo)?.map((playerGameComboKey, idx) => {
               const playersParticipated = playerGameComboKey?.split(',');
+              const playerStats = playerGameCombo[playerGameComboKey]?.playerStats;
               return (
                 <>
                   <button class="accordion mb-2"><div style={{color: 'white'}}><b>{playersParticipated.join(', ')}</b></div></button>
@@ -345,6 +378,7 @@ const GameStats = () => {
                           }
                         </tbody>
                       </table>
+                      <h4 style={{color: 'green'}}>Player Overall Stats</h4>
                       <table class="table player-stats-table">
                         <thead>
                           <tr>
@@ -372,6 +406,31 @@ const GameStats = () => {
                               </tr>
                             )}
                           </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Round Stats</h4>
+                      <table class="table rummy-table">
+                        <thead>
+                          <tr>
+                            <th>Player Name</th>
+                            <th>Rummys</th>
+                            <th>Drops</th>
+                            <th>Outs</th>
+                            <th>75s</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            playersParticipated?.map(player => (
+                              <tr>
+                                <td>{player}</td>
+                                <td>{playerStats[player]?.rummys}</td>
+                                <td>{playerStats[player]?.drops}</td>
+                                <td>{playerStats[player]?.outs}</td>
+                                <td>{playerStats[player]?.seventyFives}</td>
+                              </tr>
+                            ))
+                          }
+                        </tbody>
                       </table>
                       <h4 style={{marginTop: '50px', color: 'green'}}>Winner Chart</h4>
                       <PieChart
