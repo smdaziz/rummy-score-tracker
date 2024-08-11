@@ -1,4 +1,4 @@
-name: Set up Environment
+name: Deploy Rummy Score Tracker App to GitHub Pages
 
 on:
   push:
@@ -6,33 +6,22 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:  # Add permissions here for the build job
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{steps.deployment.outputs.page_url}}
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
-    - name: Configure GitHub Pages
-      uses: actions/configure-pages@v3
-
-    - name: Build with Jekyll
-      uses: actions/jekyll-build-pages@v1
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
       with:
-        # upload entire directory
-        path: '.'
+        node-version: '16.20.1'
 
-    - name: Deploy
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build and Deploy
       env:
         REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
-      uses: actions/deploy-pages@v4
+      run: npm run deploy
