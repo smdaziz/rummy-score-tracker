@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +19,11 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
 
-    - name: Build and Deploy
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy
       env:
         REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
       uses: actions/deploy-pages@v4
