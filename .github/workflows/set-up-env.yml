@@ -18,6 +18,9 @@ jobs:
       with:
         node-version: '16.20.1'
 
+    - name: Remove yarn.lock
+      run: rm yarn.lock
+
     - name: Install dependencies
       run: yarn install
 
