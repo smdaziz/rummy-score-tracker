@@ -18,8 +18,8 @@ jobs:
       with:
         node-version: '16.20.1'
 
-    # - name: Install dependencies
-    #   run: npm install
+    - name: Install dependencies
+      run: yarn install
 
     - name: Yarn Build
       run: yarn build
