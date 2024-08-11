@@ -16,3 +16,4 @@ jobs:
     - name: Build and Deploy
       env:
         REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+      uses: actions/deploy-pages@v4
