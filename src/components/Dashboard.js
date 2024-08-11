@@ -35,7 +35,6 @@ function Dashboard() {
         Logged in as
          <div>{name}</div>
          <div>{user?.email}</div>
-         <div>Key: {JSON.stringify(process.env.REACT_APP_FIREBASE_API_KEY)}</div>
          <div>
            <button class="btn btn-success my-1" onClick={() => navigate("/registerplayer")}>Register Player</button>
          </div>

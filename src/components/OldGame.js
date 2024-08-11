@@ -19,7 +19,8 @@ const OldGame = (props) => {
 
     const game = gameHistory.find(game => game.utcDateMS == gameId);
 
-    const players = game?.playerRanking?.map(player => player.name);
+    // const players = game?.playerRanking?.map(player => player.name);
+    const players = game?.players;
     setGame(game);
     setPlayers(players);
 
@@ -61,10 +62,16 @@ const OldGame = (props) => {
       <br></br>
       <button class="btn btn-success my-1" onClick={() => navigate("/gamestats")}>Game Stats</button>
       <h2 className="my-3" style={{color: 'green'}}>Game Played on {game?.date}</h2>
-      <h4>Players</h4>
+      <h4>Playing Order</h4>
       <ul>
         {
-          players?.map(player => <li>{player}</li>)
+          players?.map(player => <li>{player} ({game?.playerRanking?.find(playerRank => playerRank.name === player).total})</li>)
+        }
+      </ul>
+      <h4>Player Ranking</h4>
+      <ul>
+        {
+          game?.playerRanking?.map(player => <li>{player.name} ({player.total})</li>)
         }
       </ul>
       <h4>Rounds Played: {game?.rounds}</h4>
@@ -93,7 +100,8 @@ const OldGame = (props) => {
           <tr class="total">
             <td><b>Total</b></td>
             {
-              game?.playerRanking?.map(player => <td>{player?.total}</td>)
+              // game?.playerRanking?.map(player => <td>{player?.total}</td>)
+              players?.map(player => <td>{game?.playerRanking?.find(playerRank => playerRank.name === player).total}</td>)
             }
           </tr>
         </tbody>

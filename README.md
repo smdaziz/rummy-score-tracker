@@ -2,6 +2,17 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+How to run locally:
+1. `nvm use` (it should se the node version to v16.20.1 for this project/app)
+2. Create a `.env` file in project base folder and add the [environment variables](https://github.com/smdaziz/rummy-score-tracker/settings/environments/290648379/edit). Ex: `REACT_APP_FIREBASE_API_KEY=d34dad343dadfdf343`
+3. Run `export NODE_OPTIONS=--openssl-legacy-provider` to be able to bypass Open SSL related error - https://stackoverflow.com/questions/74726224/opensslerrorstack-error03000086digital-envelope-routinesinitialization-e
+4. `yarn start`
+
+How to deploy to github pages:
+1. Create a `.env` file in project base folder and add the [environment variables](https://github.com/smdaziz/rummy-score-tracker/settings/environments/290648379/edit). Ex: `REACT_APP_FIREBASE_API_KEY=d34dad343dadfdf343` (Note: it is very important for all the envs to have a `REACT_APP_` prefix for github pages + react combo to detect the env variables passed to the running process)
+2. `yarn build`
+3. `npm run deploy`
+
 ## Available Scripts
 
 In the project directory, you can run:
