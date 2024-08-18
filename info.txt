@@ -19,6 +19,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+Account creation:
+You can create accounts using information like player@rummy.io/player/player OR admin@rummy.io/admin/secret as user email, name and passwords
+Note: password should be at least 6 characters
 
 
 

@@ -1,10 +1,26 @@
 import React, { Fragment, useEffect, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate, useParams } from "react-router-dom";
-import { getGameHistoryData } from "../firebase";
+import { auth, db, deleteGame, getGameHistoryData } from "../firebase";
 import ReadOnlyRow from "./ReadOnlyRow";
 import WinnerCup from './../assets/winner-cup.png';
+import { query, collection, getDocs, where } from "firebase/firestore";
 
 const OldGame = (props) => {
+  const [user, loading, error] = useAuthState(auth);
+  const [name, setName] = useState("");
+  const fetchUserName = async () => {
+    try {
+      const q = query(collection(db, "users"), where("uid", "==", user?.uid));
+      const doc = await getDocs(q);
+      const data = doc.docs[0].data();
+      setName(data.name);
+    } catch (err) {
+      console.error(err);
+      alert("An error occured while fetching user data");
+    }
+  };
+
   const navigate = useNavigate();
 
   const [game, setGame] = useState({});
@@ -15,6 +31,7 @@ const OldGame = (props) => {
   const gameId = useParams().gameId;
 
   useEffect(async () => {
+    fetchUserName();
     const gameHistory = await getGameHistoryData();
 
     const game = gameHistory.find(game => game.utcDateMS == gameId);
@@ -52,6 +69,11 @@ const OldGame = (props) => {
     console.log(playerStats);
     setPlayerStats(playerStats);
   }, []);
+
+  const handleDeleteGame = async () => {
+    deleteGame(game.docId);
+    navigate("/gamehistory");
+  };
 
   return (
     <div>
@@ -131,6 +153,12 @@ const OldGame = (props) => {
           }
         </tbody>
       </table>
+      {
+        name === 'admin' &&
+        <button type="button" class="btn btn-warning" onClick={handleDeleteGame}>
+          Delete
+        </button>
+      }
     </div>
   );
 };

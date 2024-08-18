@@ -186,6 +186,20 @@ const deleteRoundData = async (roundId) => {
   }
 };
 
+const deleteGame = async (docId) => {
+  try {
+    const gameQuery = query(collection(db, "game_history"), where("id", "==", docId));
+    const gameDoc = await getDocs(gameQuery);
+    console.log(gameDoc);
+    const docRef = doc(db, "game_history", docId);
+    console.log(docRef);
+    await deleteDoc(docRef);
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
+
 const getGameData = async () => {
   const gameData = [];
   try {
@@ -348,5 +362,6 @@ export {
   getGameData,
   saveGame,
   discardGame,
+  deleteGame,
   getGameHistoryData
 };

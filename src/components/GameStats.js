@@ -17,6 +17,54 @@ const GameStats = () => {
   const [runnerChartData, setRunnerChartData] = useState([]);
   const [outChartData, setOutChartData] = useState([]);
 
+  // const getLexicographicallySmallestRotation = (str) => {
+  //   const doubled = str + str;
+  //   const n = str.length;
+  //   let smallestRotation = str;
+  
+  //   for (let i = 1; i < n; i++) {
+  //     const rotation = doubled.slice(i, i + n);
+  //     if (rotation < smallestRotation) {
+  //       smallestRotation = rotation;
+  //     }
+  //   }
+  
+  //   return smallestRotation;
+  // };
+
+  // const getLexicographicallySmallestRotation = (str) => {
+  //   const doubled = str + str;
+  //   const n = str.length / 2;
+  //   let smallestRotation = str;
+    
+  //   for (let i = 1; i < n; i++) {
+  //       const rotation = doubled.slice(i * (str.indexOf(' -> ') + 4), i * (str.indexOf(' -> ') + 4) + str.length);
+  //       if (rotation < smallestRotation) {
+  //           smallestRotation = rotation;
+  //       }
+  //   }
+    
+  //   return smallestRotation;
+  // };
+
+  const getLexicographicallySmallestRotation = (players) => {
+    const n = players.length;
+    let smallestRotation = players.join(' -> ');
+    
+    // Generate all rotations
+    for (let i = 1; i < n; i++) {
+        // Rotate the array
+        const rotation = players.slice(i).concat(players.slice(0, i)).join(' -> ');
+        
+        // Compare to find the smallest rotation
+        if (rotation < smallestRotation) {
+            smallestRotation = rotation;
+        }
+    }
+    
+    return smallestRotation;
+  };
+
   useEffect(async () => {
     const gameHistory = await getGameHistoryData();
 
@@ -106,7 +154,9 @@ const GameStats = () => {
       const playerRunnerCount = {};
       const playerOutCount = {};
       const playerGameCount = {};
-      const playerWinnerRunner = [];
+      const playerDealerCount = {};
+      const playerSeatingCount = {};
+      const playerNormalizedSeatingCount = {};
       playerGameComboObj?.games?.forEach(game => {
         //winner
         let winCount = playerWinnerCount[game?.winner];
@@ -139,11 +189,39 @@ const GameStats = () => {
             playerGameCount[player?.name] = gameCount+1;
           }
         });
+        //dealer count
+        const dealer = game?.players[game?.players?.length - 1];
+        let dealerCount = playerDealerCount[dealer];
+        if(!dealerCount) {
+          playerDealerCount[dealer] = 1;
+        } else {
+          playerDealerCount[dealer] = dealerCount+1;
+        }
+        //seating count
+        const seatingKey = game?.players?.join(' -> ');
+        let seatingCount = playerSeatingCount[seatingKey];
+        if(!seatingCount) {
+          playerSeatingCount[seatingKey] = 1;
+        } else {
+          playerSeatingCount[seatingKey] = seatingCount+1;
+        }
+        //lexicographically smallest rotation
+        // const normalizedSeatingKey = getLexicographicallySmallestRotation(game?.players?.join(' -> '));
+        const normalizedSeatingKey = getLexicographicallySmallestRotation(game?.players);
+        let normalizedSeatingCount = playerNormalizedSeatingCount[normalizedSeatingKey];
+        if(!normalizedSeatingCount) {
+          playerNormalizedSeatingCount[normalizedSeatingKey] = 1;
+        } else {
+          playerNormalizedSeatingCount[normalizedSeatingKey] = normalizedSeatingCount+1;
+        }
       });
       playerGameCombo[playerGameComboKey].playerWinnerCount = playerWinnerCount;
       playerGameCombo[playerGameComboKey].playerRunnerCount = playerRunnerCount;
       playerGameCombo[playerGameComboKey].playerOutCount = playerOutCount;
       playerGameCombo[playerGameComboKey].playerGameCount = playerGameCount;
+      playerGameCombo[playerGameComboKey].playerDealerCount = playerDealerCount;
+      playerGameCombo[playerGameComboKey].playerSeatingCount = playerSeatingCount;
+      playerGameCombo[playerGameComboKey].playerNormalizedSeatingCount = playerNormalizedSeatingCount;
       playerGameCombo[playerGameComboKey].playerWinnerRunner = [];
       playerGameCombo[playerGameComboKey].winnerChartData = [];
       playerGameCombo[playerGameComboKey].runnerChartData = [];
@@ -427,6 +505,69 @@ const GameStats = () => {
                                 <td>{playerStats[player]?.drops}</td>
                                 <td>{playerStats[player]?.outs}</td>
                                 <td>{playerStats[player]?.seventyFives}</td>
+                              </tr>
+                            ))
+                          }
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Dealer Stats</h4>
+                      <table class="table rummy-table">
+                        <thead>
+                          <tr>
+                            <th>Player Name</th>
+                            <th>Game Starter (Dealer)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            Object.keys(playerGameCombo[playerGameComboKey].playerDealerCount)
+                            ?.sort((p1, p2) => playerGameCombo[playerGameComboKey].playerDealerCount[p2] - playerGameCombo[playerGameComboKey].playerDealerCount[p1])
+                            ?.map(player => (
+                              <tr>
+                                <td>{player}</td>
+                                <td>{playerGameCombo[playerGameComboKey].playerDealerCount[player]}</td>
+                              </tr>
+                            ))
+                          }
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Seating Stats (Dealer at the end)</h4>
+                      <table class="table rummy-table">
+                        <thead>
+                          <tr>
+                            <th>Player Seating</th>
+                            <th>Count</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            Object.keys(playerGameCombo[playerGameComboKey].playerSeatingCount)
+                            ?.sort((p1, p2) => playerGameCombo[playerGameComboKey].playerSeatingCount[p2] - playerGameCombo[playerGameComboKey].playerSeatingCount[p1])
+                            ?.map(player => (
+                              <tr>
+                                <td>{player}</td>
+                                <td>{playerGameCombo[playerGameComboKey].playerSeatingCount[player]}</td>
+                              </tr>
+                            ))
+                          }
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Normalized Seating Stats</h4>
+                      <table class="table rummy-table">
+                        <thead>
+                          <tr>
+                            <th>Player Seating</th>
+                            <th>Count</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            Object.keys(playerGameCombo[playerGameComboKey].playerNormalizedSeatingCount)
+                            ?.sort((p1, p2) => playerGameCombo[playerGameComboKey].playerNormalizedSeatingCount[p2] - playerGameCombo[playerGameComboKey].playerNormalizedSeatingCount[p1])
+                            ?.map(player => (
+                              <tr>
+                                <td>{player}</td>
+                                <td>{playerGameCombo[playerGameComboKey].playerNormalizedSeatingCount[player]}</td>
                               </tr>
                             ))
                           }
