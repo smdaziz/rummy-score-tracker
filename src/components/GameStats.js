@@ -156,7 +156,9 @@ const GameStats = () => {
       const playerGameCount = {};
       const playerDealerCount = {};
       const playerSeatingCount = {};
+      const playerSeatingGames = {};
       const playerNormalizedSeatingCount = {};
+      const playerNormalizedSeatingGames = {};
       playerGameComboObj?.games?.forEach(game => {
         //winner
         let winCount = playerWinnerCount[game?.winner];
@@ -205,6 +207,13 @@ const GameStats = () => {
         } else {
           playerSeatingCount[seatingKey] = seatingCount+1;
         }
+        //seating count stats
+        let seatingCountGames = playerSeatingGames[seatingKey];
+        if(!seatingCountGames) {
+          playerSeatingGames[seatingKey] = {games: [game]};
+        } else {
+          playerSeatingGames[seatingKey]?.games?.push(game);
+        }
         //lexicographically smallest rotation
         // const normalizedSeatingKey = getLexicographicallySmallestRotation(game?.players?.join(' -> '));
         const normalizedSeatingKey = getLexicographicallySmallestRotation(game?.players);
@@ -214,6 +223,13 @@ const GameStats = () => {
         } else {
           playerNormalizedSeatingCount[normalizedSeatingKey] = normalizedSeatingCount+1;
         }
+        //normalized seating count stats
+        let normalizedSeatingCountGames = playerNormalizedSeatingGames[normalizedSeatingKey];
+        if(!normalizedSeatingCountGames) {
+          playerNormalizedSeatingGames[normalizedSeatingKey] = {games: [game]};
+        } else {
+          playerNormalizedSeatingGames[normalizedSeatingKey]?.games?.push(game);
+        }
       });
       playerGameCombo[playerGameComboKey].playerWinnerCount = playerWinnerCount;
       playerGameCombo[playerGameComboKey].playerRunnerCount = playerRunnerCount;
@@ -221,7 +237,9 @@ const GameStats = () => {
       playerGameCombo[playerGameComboKey].playerGameCount = playerGameCount;
       playerGameCombo[playerGameComboKey].playerDealerCount = playerDealerCount;
       playerGameCombo[playerGameComboKey].playerSeatingCount = playerSeatingCount;
+      playerGameCombo[playerGameComboKey].playerSeatingCountStats = {};
       playerGameCombo[playerGameComboKey].playerNormalizedSeatingCount = playerNormalizedSeatingCount;
+      playerGameCombo[playerGameComboKey].playerNormalizedSeatingCountStats = {};
       playerGameCombo[playerGameComboKey].playerWinnerRunner = [];
       playerGameCombo[playerGameComboKey].winnerChartData = [];
       playerGameCombo[playerGameComboKey].runnerChartData = [];
@@ -251,6 +269,138 @@ const GameStats = () => {
         });
       });
       playerGameCombo[playerGameComboKey].playerWinnerRunner?.sort((p1, p2) => p2?.winPercentage - p1?.winPercentage);
+      //player game stats by seating
+      Object.keys(playerSeatingGames)?.forEach(seatingKey => {
+        console.log('seatingKey', seatingKey);
+        const playerSeatingGamesObj = playerSeatingGames[seatingKey];
+        const playerWinnerCount = {};
+        const playerRunnerCount = {};
+        const playerOutCount = {};
+        const playerGameCount = {};
+        playerSeatingGamesObj?.games?.forEach(game => {
+          //winner
+          let winCount = playerWinnerCount[game?.winner];
+          if(!winCount) {
+            playerWinnerCount[game?.winner] = 1;
+          } else {
+            playerWinnerCount[game?.winner] = winCount+1;
+          }
+          //runner
+          let runnerCount = playerRunnerCount[game?.runner];
+          if(!runnerCount) {
+            playerRunnerCount[game?.runner] = 1;
+          } else {
+            playerRunnerCount[game?.runner] = runnerCount+1;
+          }
+          //out
+          const out = game?.playerRanking?.[game?.playerRanking?.length - 1]?.name;
+          let outCount = playerOutCount[out];
+          if(!outCount) {
+            playerOutCount[out] = 1;
+          } else {
+            playerOutCount[out] = outCount+1;
+          }
+          //player game count
+          game?.playerRanking?.forEach(player => {
+            let gameCount = playerGameCount[player?.name];
+            if(!gameCount) {
+              playerGameCount[player?.name] = 1;
+            } else {
+              playerGameCount[player?.name] = gameCount+1;
+            }
+          });
+        });
+        const sortedPlayerWinnerCount = Object.entries(playerWinnerCount)
+        .sort(([, a], [, b]) => b - a)
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+        const sortedPlayerRunnerCount = Object.entries(playerRunnerCount)
+        .sort(([, a], [, b]) => b - a)
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+        const sortedPlayerOutCount = Object.entries(playerOutCount)
+        .sort(([, a], [, b]) => b - a)
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+        playerGameCombo[playerGameComboKey].playerSeatingCountStats[seatingKey] = {
+          playerWinnerCount: sortedPlayerWinnerCount,
+          playerRunnerCount: sortedPlayerRunnerCount,
+          playerOutCount: sortedPlayerOutCount,
+          playerGameCount
+        };
+      });
+      //player game stats by normalized seating
+      Object.keys(playerNormalizedSeatingGames)?.forEach(seatingKey => {
+        console.log('seatingKey', seatingKey);
+        const playerNormalizedSeatingGamesObj = playerNormalizedSeatingGames[seatingKey];
+        const playerWinnerCount = {};
+        const playerRunnerCount = {};
+        const playerOutCount = {};
+        const playerGameCount = {};
+        playerNormalizedSeatingGamesObj?.games?.forEach(game => {
+          //winner
+          let winCount = playerWinnerCount[game?.winner];
+          if(!winCount) {
+            playerWinnerCount[game?.winner] = 1;
+          } else {
+            playerWinnerCount[game?.winner] = winCount+1;
+          }
+          //runner
+          let runnerCount = playerRunnerCount[game?.runner];
+          if(!runnerCount) {
+            playerRunnerCount[game?.runner] = 1;
+          } else {
+            playerRunnerCount[game?.runner] = runnerCount+1;
+          }
+          //out
+          const out = game?.playerRanking?.[game?.playerRanking?.length - 1]?.name;
+          let outCount = playerOutCount[out];
+          if(!outCount) {
+            playerOutCount[out] = 1;
+          } else {
+            playerOutCount[out] = outCount+1;
+          }
+          //player game count
+          game?.playerRanking?.forEach(player => {
+            let gameCount = playerGameCount[player?.name];
+            if(!gameCount) {
+              playerGameCount[player?.name] = 1;
+            } else {
+              playerGameCount[player?.name] = gameCount+1;
+            }
+          });
+        });
+        const sortedPlayerWinnerCount = Object.entries(playerWinnerCount)
+        .sort(([, a], [, b]) => b - a)
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+        const sortedPlayerRunnerCount = Object.entries(playerRunnerCount)
+        .sort(([, a], [, b]) => b - a)
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+        const sortedPlayerOutCount = Object.entries(playerOutCount)
+        .sort(([, a], [, b]) => b - a)
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+        playerGameCombo[playerGameComboKey].playerNormalizedSeatingCountStats[seatingKey] = {
+          playerWinnerCount: sortedPlayerWinnerCount,
+          playerRunnerCount: sortedPlayerRunnerCount,
+          playerOutCount: sortedPlayerOutCount,
+          playerGameCount
+        };
+      });
     });
     //player winner runner out counts by game combo - end
     const gameWins = [];
@@ -484,6 +634,60 @@ const GameStats = () => {
                               </tr>
                             )}
                           </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Overall Stats by Seating (Dealer at the end)</h4>
+                      <table class="table player-stats-table">
+                        <thead>
+                          <tr>
+                            <th>Player Seating</th>
+                            <th>Player Name</th>
+                            <th>Winner</th>
+                            <th>Runner</th>
+                            <th>Out</th>
+                            <th>Games Played</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.keys(playerGameCombo[playerGameComboKey]?.playerSeatingCountStats)?.map((playerSeating, seatingIndex) => 
+                            Object.keys(playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerWinnerCount)?.map(player =>
+                              <tr key={`${playerSeating}-${player}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td>{playerSeating}</td>
+                                <td>{player}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerWinnerCount[player]}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerRunnerCount[player]}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerOutCount[player]}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerGameCount[player]}</td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Overall Stats by Normalized Seating</h4>
+                      <table class="table player-stats-table">
+                        <thead>
+                          <tr>
+                            <th>Player Seating</th>
+                            <th>Player Name</th>
+                            <th>Winner</th>
+                            <th>Runner</th>
+                            <th>Out</th>
+                            <th>Games Played</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.keys(playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats)?.map((playerSeating, seatingIndex) => 
+                            Object.keys(playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerWinnerCount)?.map(player =>
+                              <tr key={`${playerSeating}-${player}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td>{playerSeating}</td>
+                                <td>{player}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerWinnerCount[player]}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerRunnerCount[player]}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerOutCount[player]}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerGameCount[player]}</td>
+                              </tr>
+                            )
+                          )}
+                        </tbody>
                       </table>
                       <h4 style={{color: 'green'}}>Player Round Stats</h4>
                       <table class="table rummy-table">

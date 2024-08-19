@@ -12,6 +12,9 @@ How to deploy to github pages:
 1. Create a `.env` file in project base folder and add the [environment variables](https://github.com/smdaziz/rummy-score-tracker/settings/environments/290648379/edit). Ex: `REACT_APP_FIREBASE_API_KEY=d34dad343dadfdf343` (Note: it is very important for all the envs to have a `REACT_APP_` prefix for github pages + react combo to detect the env variables passed to the running process)
 2. `yarn build`
 3. `npm run deploy`
+Notes:
+1. If for some reason it tries to pick up github work account (Github enterprise) instead of personal github account, you can `gh auth login` to force it use personal account.
+2. If publish fails with `error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400`, reclone the repo and attempt publish
 
 ## Available Scripts
 

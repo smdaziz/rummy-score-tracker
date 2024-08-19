@@ -181,6 +181,14 @@ form * {
   background-color: #F2F5EA;
 }
 
+.player-stats-table tbody tr.even-group {
+  background-color: #F2F5EA;
+}
+
+.player-stats-table tbody tr.odd-group {
+  background-color: #EDEAF5;
+}
+
 /* accordion changes */
 .accordion {
   /* background-color: #eee; */
