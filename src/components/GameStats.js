@@ -65,6 +65,249 @@ const GameStats = () => {
     return smallestRotation;
   };
 
+  const calculateStats = (arr) => {
+    arr = arr?.filter(val => typeof val === 'number' && !isNaN(val));
+    if (!arr || arr.length === 0) return {};
+  
+    // Lowest and Highest
+    const lowest = Math.min(...arr);
+    const highest = Math.max(...arr);
+  
+    // Average
+    const sum = arr.reduce((acc, val) => acc + val, 0);
+    const average = Math.round(sum / arr.length);
+  
+    // Median
+    const sortedArr = [...arr].sort((a, b) => a - b);
+    const mid = Math.floor(sortedArr.length / 2);
+    const median = Math.round(sortedArr.length % 2 !== 0 ? sortedArr[mid] : (sortedArr[mid - 1] + sortedArr[mid]) / 2);
+  
+    // Mode
+    const frequency = {};
+    let maxFreq = 0;
+    let mode = [];
+    for (const num of arr) {
+      frequency[num] = (frequency[num] || 0) + 1;
+      if (frequency[num] > maxFreq) {
+        maxFreq = frequency[num];
+        mode = [num];
+      } else if (frequency[num] === maxFreq) {
+        mode.push(num);
+      }
+    }
+    if (mode.length > 1) {
+      mode = mode?.sort((a, b) => a - b);
+      // Mode statistics
+      const modeMin = Math.min(...mode);
+      const modeMax = Math.max(...mode);
+      const modeSum = mode.reduce((acc, val) => acc + val, 0);
+      const modeAvg = Math.round(modeSum / mode.length);
+      mode = `[${modeMin}, ${modeAvg}, ${modeMax}]`;
+    } else {
+      mode = mode[0];
+    }
+  
+    // Standard Deviation
+    const variance = arr.reduce((acc, val) => acc + Math.pow(val - average, 2), 0) / arr.length;
+    const stdDeviation = Math.round(Math.sqrt(variance));
+  
+    return { lowest, highest, average, median, mode, stdDeviation };
+  };
+
+  /*const computePointsStats = (playerGameCombo) => {
+    Object.keys(playerGameCombo)?.forEach(playerGameComboKey => {
+      const playerSeatingGames = {};
+      const playerNormalizedSeatingGames = {};
+      const playerGameComboObj = playerGameCombo[playerGameComboKey];
+      const playerRankings = playerGameComboObj?.games?.map(game => game?.playerRanking);
+      const winnerData = playerRankings?.map(playerRanking => playerRanking[0]);
+      const runnerData = playerRankings?.map(playerRanking => playerRanking[1]);
+      const outData = playerRankings?.map(playerRanking => playerRanking[playerRanking.length - 1]);
+      const winnerDataSorted = winnerData?.sort((p1, p2) => p2?.total - p1?.total);
+      const runnerDataSorted = runnerData?.sort((p1, p2) => p2?.total - p1?.total);
+      const outDataSorted = outData?.sort((p1, p2) => p2?.total - p1?.total);
+      const winnerRunnerMarginData = playerRankings?.map(playerRanking => playerRanking[1]?.total - playerRanking[0]?.total);
+      const winnerOutMarginData = playerRankings?.map(playerRanking => playerRanking[playerRanking.length - 1]?.total - playerRanking[0]?.total);
+      const runnerOutMarginData = playerRankings?.map(playerRanking => playerRanking[playerRanking.length - 1]?.total - playerRanking[1]?.total);
+      const winnerRunnerMarginStats = calculateStats(winnerRunnerMarginData);
+      const winnerOutMarginStats = calculateStats(winnerOutMarginData);
+      const runnerOutMarginStats = calculateStats(runnerOutMarginData);
+      playerGameComboObj['pointsStats'] = {
+        playerRecords: {
+          lowestWinner: winnerDataSorted?.[winnerDataSorted?.length - 1],
+          highestWinner: winnerDataSorted?.[0],
+          lowestRunner: runnerDataSorted?.[runnerDataSorted?.length - 1],
+          highestRunner: runnerDataSorted?.[0],
+          lowestOut: outDataSorted?.[outDataSorted?.length - 1],
+          highestOut: outDataSorted?.[0]
+        },
+        marginStats: {
+          winnerRunnerMarginStats,
+          winnerOutMarginStats,
+          runnerOutMarginStats
+        },
+        playerSeatingGames: {},
+        playerNormalizedSeatingGames: {}
+      };
+      //player point stats by seating - start
+      playerGameComboObj?.games?.forEach(game => {
+        const seatingKey = game?.players?.join(' -> ');
+        if(!playerSeatingGames[seatingKey]) {
+          playerSeatingGames[seatingKey] = {games: [game]};
+        } else {
+          playerSeatingGames[seatingKey]?.games?.push(game);
+        }
+        const normalizedSeatingKey = getLexicographicallySmallestRotation(game?.players);
+        if(!playerNormalizedSeatingGames[normalizedSeatingKey]) {
+          playerNormalizedSeatingGames[normalizedSeatingKey] = {games: [game]};
+        } else {
+          playerNormalizedSeatingGames[normalizedSeatingKey]?.games?.push(game);
+        }
+      });
+      Object.keys(playerSeatingGames)?.forEach(seatingKey => {
+        const playerSeatingGamesObj = playerSeatingGames[seatingKey];
+        const playerRankings = playerSeatingGamesObj?.games?.map(game => game?.playerRanking);
+        const winnerData = playerRankings?.map(playerRanking => playerRanking[0]);
+        const runnerData = playerRankings?.map(playerRanking => playerRanking[1]);
+        const outData = playerRankings?.map(playerRanking => playerRanking[playerRanking.length - 1]);
+        const winnerDataSorted = winnerData?.sort((p1, p2) => p2?.total - p1?.total);
+        const runnerDataSorted = runnerData?.sort((p1, p2) => p2?.total - p1?.total);
+        const outDataSorted = outData?.sort((p1, p2) => p2?.total - p1?.total);
+        const winnerRunnerMarginData = playerRankings?.map(playerRanking => playerRanking[1]?.total - playerRanking[0]?.total);
+        const winnerOutMarginData = playerRankings?.map(playerRanking => playerRanking[playerRanking.length - 1]?.total - playerRanking[0]?.total);
+        const runnerOutMarginData = playerRankings?.map(playerRanking => playerRanking[playerRanking.length - 1]?.total - playerRanking[1]?.total);
+        const winnerRunnerMarginStats = calculateStats(winnerRunnerMarginData);
+        const winnerOutMarginStats = calculateStats(winnerOutMarginData);
+        const runnerOutMarginStats = calculateStats(runnerOutMarginData);
+        playerGameComboObj['pointsStats']['playerSeatingGames'][seatingKey] = {
+          playerRecords: {
+            lowestWinner: winnerDataSorted?.[winnerDataSorted?.length - 1],
+            highestWinner: winnerDataSorted?.[0],
+            lowestRunner: runnerDataSorted?.[runnerDataSorted?.length - 1],
+            highestRunner: runnerDataSorted?.[0],
+            lowestOut: outDataSorted?.[outDataSorted?.length - 1],
+            highestOut: outDataSorted?.[0]
+          },
+          marginStats: {
+            winnerRunnerMarginStats,
+            winnerOutMarginStats,
+            runnerOutMarginStats
+          }
+        };
+      });
+      Object.keys(playerNormalizedSeatingGames)?.forEach(seatingKey => {
+        const playerNormalizedSeatingGamesObj = playerNormalizedSeatingGames[seatingKey];
+        const playerRankings = playerNormalizedSeatingGamesObj?.games?.map(game => game?.playerRanking);
+        const winnerData = playerRankings?.map(playerRanking => playerRanking[0]);
+        const runnerData = playerRankings?.map(playerRanking => playerRanking[1]);
+        const outData = playerRankings?.map(playerRanking => playerRanking[playerRanking.length - 1]);
+        const winnerDataSorted = winnerData?.sort((p1, p2) => p2?.total - p1?.total);
+        const runnerDataSorted = runnerData?.sort((p1, p2) => p2?.total - p1?.total);
+        const outDataSorted = outData?.sort((p1, p2) => p2?.total - p1?.total);
+        const winnerRunnerMarginData = playerRankings?.map(playerRanking => playerRanking[1]?.total - playerRanking[0]?.total);
+        const winnerOutMarginData = playerRankings?.map(playerRanking => playerRanking[playerRanking.length - 1]?.total - playerRanking[0]?.total);
+        const runnerOutMarginData = playerRankings?.map(playerRanking => playerRanking[playerRanking.length - 1]?.total - playerRanking[1]?.total);
+        const winnerRunnerMarginStats = calculateStats(winnerRunnerMarginData);
+        const winnerOutMarginStats = calculateStats(winnerOutMarginData);
+        const runnerOutMarginStats = calculateStats(runnerOutMarginData);
+        playerGameComboObj['pointsStats']['playerNormalizedSeatingGames'][seatingKey] = {
+          playerRecords: {
+            lowestWinner: winnerDataSorted?.[winnerDataSorted?.length - 1],
+            highestWinner: winnerDataSorted?.[0],
+            lowestRunner: runnerDataSorted?.[runnerDataSorted?.length - 1],
+            highestRunner: runnerDataSorted?.[0],
+            lowestOut: outDataSorted?.[outDataSorted?.length - 1],
+            highestOut: outDataSorted?.[0]
+          },
+          marginStats: {
+            winnerRunnerMarginStats,
+            winnerOutMarginStats,
+            runnerOutMarginStats
+          }
+        };
+      });
+      //player point stats by seating - end
+      console.log('playerGameComboObj', playerGameComboObj);
+    });
+  };*/
+
+  const computePointsStats = (playerGameCombo) => {
+    const processPlayerRankings = (playerRankings) => {
+      const winnerData = playerRankings.map(playerRanking => playerRanking[0]);
+      const runnerData = playerRankings.map(playerRanking => playerRanking[1]);
+      const outData = playerRankings.map(playerRanking => playerRanking[playerRanking.length - 1]);
+  
+      const winnerDataSorted = [...winnerData].sort((p1, p2) => p2.total - p1.total);
+      const runnerDataSorted = [...runnerData].sort((p1, p2) => p2.total - p1.total);
+      const outDataSorted = [...outData].sort((p1, p2) => p2.total - p1.total);
+  
+      const winnerRunnerMarginData = playerRankings.map(playerRanking => playerRanking[1].total - playerRanking[0].total);
+      const winnerOutMarginData = playerRankings.map(playerRanking => playerRanking[playerRanking.length - 1].total - playerRanking[0].total);
+      const runnerOutMarginData = playerRankings.map(playerRanking => playerRanking[playerRanking.length - 1].total - playerRanking[1].total);
+  
+      return {
+        playerRecords: {
+          lowestWinner: winnerDataSorted[winnerDataSorted.length - 1],
+          highestWinner: winnerDataSorted[0],
+          lowestRunner: runnerDataSorted[runnerDataSorted.length - 1],
+          highestRunner: runnerDataSorted[0],
+          lowestOut: outDataSorted[outDataSorted.length - 1],
+          highestOut: outDataSorted[0]
+        },
+        marginStats: {
+          winnerRunnerMarginStats: calculateStats(winnerRunnerMarginData),
+          winnerOutMarginStats: calculateStats(winnerOutMarginData),
+          runnerOutMarginStats: calculateStats(runnerOutMarginData)
+        }
+      };
+    };
+  
+    const processGames = (games) => {
+      const playerRankings = games.map(game => game.playerRanking);
+      return processPlayerRankings(playerRankings);
+    };
+  
+    Object.keys(playerGameCombo).forEach(playerGameComboKey => {
+      const playerSeatingGames = {};
+      const playerNormalizedSeatingGames = {};
+
+      const playerGameComboObj = playerGameCombo[playerGameComboKey];
+      const playerRankings = playerGameComboObj.games.map(game => game.playerRanking);
+  
+      playerGameComboObj.pointsStats = {
+        ...processPlayerRankings(playerRankings),
+        playerSeatingGames: {},
+        playerNormalizedSeatingGames: {}
+      };
+  
+      playerGameComboObj.games.forEach(game => {
+        const seatingKey = game.players.join(' -> ');
+        if (!playerSeatingGames[seatingKey]) {
+          playerSeatingGames[seatingKey] = { games: [game] };
+        } else {
+          playerSeatingGames[seatingKey].games.push(game);
+        }
+  
+        const normalizedSeatingKey = getLexicographicallySmallestRotation(game.players);
+        if (!playerNormalizedSeatingGames[normalizedSeatingKey]) {
+          playerNormalizedSeatingGames[normalizedSeatingKey] = { games: [game] };
+        } else {
+          playerNormalizedSeatingGames[normalizedSeatingKey].games.push(game);
+        }
+      });
+  
+      Object.keys(playerSeatingGames).forEach(seatingKey => {
+        playerGameComboObj.pointsStats.playerSeatingGames[seatingKey] = processGames(playerSeatingGames[seatingKey].games);
+      });
+  
+      Object.keys(playerNormalizedSeatingGames).forEach(seatingKey => {
+        playerGameComboObj.pointsStats.playerNormalizedSeatingGames[seatingKey] = processGames(playerNormalizedSeatingGames[seatingKey].games);
+      });
+  
+      console.log('playerGameComboObj', playerGameComboObj);
+    });
+  };
+
   useEffect(async () => {
     const gameHistory = await getGameHistoryData();
 
@@ -445,8 +688,13 @@ const GameStats = () => {
       });
       playerGameCombo[playerGameComboKey].playerStats = playerStats;
     });
-    //player stats by game combo - end
+    // code modularization start
+    computePointsStats(playerGameCombo);
+    // TODO: Remove console.log
+    console.log('playerGameCombo', playerGameCombo);
+    // code modularization end
     setPlayerGameCombo(playerGameCombo);
+    //player stats by game combo - end
 
     const playerWinnerRunner = [];
     Object?.keys(playerWinnerCount)?.forEach(player => {
@@ -580,6 +828,8 @@ const GameStats = () => {
                   <div class="panel">
                     <div style={{marginBottom: '25px'}}>
                       <div><b>Players</b>{playerGameComboKey?.split(',')?.map(player => <li>{player}</li>)}</div>
+                      <br></br>
+                      <h4 style={{color: 'green'}}>Win Combination Count</h4>
                       <table class="table history-table">
                         <thead>
                           <tr>
@@ -590,7 +840,7 @@ const GameStats = () => {
                                 </th>
                               )
                             }
-                            <th>Wins</th>
+                            <th>Count</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -649,9 +899,12 @@ const GameStats = () => {
                         </thead>
                         <tbody>
                           {Object.keys(playerGameCombo[playerGameComboKey]?.playerSeatingCountStats)?.map((playerSeating, seatingIndex) => 
-                            Object.keys(playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerWinnerCount)?.map(player =>
+                            Object.keys(playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerWinnerCount)?.map((player, idx) =>
                               <tr key={`${playerSeating}-${player}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
-                                <td>{playerSeating}</td>
+                                {/* <td>{playerSeating}</td> */}
+                                {idx === 0 && (
+                                  <td rowspan={Object.keys(playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerWinnerCount).length}>{playerSeating}</td>
+                                )}
                                 <td>{player}</td>
                                 <td>{playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerWinnerCount[player]}</td>
                                 <td>{playerGameCombo[playerGameComboKey]?.playerSeatingCountStats[playerSeating]?.playerRunnerCount[player]}</td>
@@ -676,9 +929,12 @@ const GameStats = () => {
                         </thead>
                         <tbody>
                           {Object.keys(playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats)?.map((playerSeating, seatingIndex) => 
-                            Object.keys(playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerWinnerCount)?.map(player =>
+                            Object.keys(playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerWinnerCount)?.map((player, idx) =>
                               <tr key={`${playerSeating}-${player}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
-                                <td>{playerSeating}</td>
+                                {/* <td>{playerSeating}</td> */}
+                                {idx === 0 && (
+                                  <td rowspan={Object.keys(playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerWinnerCount).length}>{playerSeating}</td>
+                                )}
                                 <td>{player}</td>
                                 <td>{playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerWinnerCount[player]}</td>
                                 <td>{playerGameCombo[playerGameComboKey]?.playerNormalizedSeatingCountStats[playerSeating]?.playerRunnerCount[player]}</td>
@@ -775,6 +1031,234 @@ const GameStats = () => {
                               </tr>
                             ))
                           }
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Records</h4>
+                      <table class="table rummy-table">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>Winner (total)</th>
+                            <th>Runner (total)</th>
+                            <th>Out (total)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td style={{ backgroundColor: '#5B9279', color: '#ffffff', textAlign: 'center', fontWeight: 'bold' }}>Lowest</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.lowestWinner?.name}  ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.lowestWinner?.total})</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.lowestRunner?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.lowestRunner?.total})</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.lowestOut?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.lowestOut?.total})</td>
+                          </tr>
+                          <tr>
+                            <td style={{ backgroundColor: '#5B9279', color: '#ffffff', textAlign: 'center', fontWeight: 'bold' }}>Highest</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.highestWinner?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.highestWinner?.total})</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.highestRunner?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.highestRunner?.total})</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.highestOut?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerRecords?.highestOut?.total})</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Records by Seating (Dealer at the end)</h4>
+                      <table class="table player-stats-table">
+                        <thead>
+                          <tr>
+                            <th>Player Seating</th>
+                            <th>Measure</th>
+                            <th>Winner (total)</th>
+                            <th>Runner (total)</th>
+                            <th>Out (total)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.keys(playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames)?.map((playerSeating, seatingIndex) => 
+                            <>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td rowspan='2'>{playerSeating}</td>
+                                <td>Lowest</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.lowestWinner?.name}  ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.lowestWinner?.total})</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.lowestRunner?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.lowestRunner?.total})</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.lowestOut?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.lowestOut?.total})</td>
+                              </tr>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td>Highest</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.highestWinner?.name}  ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.highestWinner?.total})</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.highestRunner?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.highestRunner?.total})</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.highestOut?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.playerRecords?.highestOut?.total})</td>
+                              </tr>
+                            </>
+                          )}
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Records by Normalized Seating</h4>
+                      <table class="table player-stats-table">
+                        <thead>
+                          <tr>
+                            <th>Player Seating</th>
+                            <th>Measure</th>
+                            <th>Winner (total)</th>
+                            <th>Runner (total)</th>
+                            <th>Out (total)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.keys(playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames)?.map((playerSeating, seatingIndex) => 
+                            <>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td rowspan='2'>{playerSeating}</td>
+                                <td>Lowest</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.lowestWinner?.name}  ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.lowestWinner?.total})</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.lowestRunner?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.lowestRunner?.total})</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.lowestOut?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.lowestOut?.total})</td>
+                              </tr>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td>Highest</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.highestWinner?.name}  ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.highestWinner?.total})</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.highestRunner?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.highestRunner?.total})</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.highestOut?.name} ({playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.playerRecords?.highestOut?.total})</td>
+                              </tr>
+                            </>
+                          )}
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Points Margin Stats</h4>
+                      <table class="table rummy-table">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th>Lowest</th>
+                            <th>Highest</th>
+                            <th>Average</th>
+                            <th>Median</th>
+                            <th>Popular Margin</th>
+                            <th>Deviation</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td style={{ backgroundColor: '#5B9279', color: '#ffffff', textAlign: 'center', fontWeight: 'bold' }}>Winner vs Runner</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerRunnerMarginStats?.lowest}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerRunnerMarginStats?.highest}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerRunnerMarginStats?.average}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerRunnerMarginStats?.median}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerRunnerMarginStats?.mode}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerRunnerMarginStats?.stdDeviation}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ backgroundColor: '#5B9279', color: '#ffffff', textAlign: 'center', fontWeight: 'bold' }}>Winner vs Out</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerOutMarginStats?.lowest}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerOutMarginStats?.highest}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerOutMarginStats?.average}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerOutMarginStats?.median}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerOutMarginStats?.mode}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.winnerOutMarginStats?.stdDeviation}</td>
+                          </tr>
+                          <tr>
+                            <td style={{ backgroundColor: '#5B9279', color: '#ffffff', textAlign: 'center', fontWeight: 'bold' }}>Runner vs Out</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.runnerOutMarginStats?.lowest}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.runnerOutMarginStats?.highest}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.runnerOutMarginStats?.average}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.runnerOutMarginStats?.median}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.runnerOutMarginStats?.mode}</td>
+                            <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.marginStats?.runnerOutMarginStats?.stdDeviation}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Points Margin Stats by Seating (Dealer at the end)</h4>
+                      <table class="table player-stats-table">
+                        <thead>
+                          <tr>
+                            <th>Player Seating</th>
+                            <th>Measure</th>
+                            <th>Lowest</th>
+                            <th>Highest</th>
+                            <th>Average</th>
+                            <th>Median</th>
+                            <th>Popular Margin</th>
+                            <th>Deviation</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.keys(playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames)?.map((playerSeating, seatingIndex) => 
+                            <>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td rowspan='3'>{playerSeating}</td>
+                                <td>Winner vs Runner</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.lowest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.highest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.average}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.median}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.mode}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.stdDeviation}</td>
+                              </tr>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td>Winner vs Out</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.lowest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.highest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.average}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.median}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.mode}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.stdDeviation}</td>
+                              </tr>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td>Runner vs Out</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.lowest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.highest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.average}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.median}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.mode}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.stdDeviation}</td>
+                              </tr>
+                            </>
+                          )}
+                        </tbody>
+                      </table>
+                      <h4 style={{color: 'green'}}>Player Points Margin Stats by Normalized Seating</h4>
+                      <table class="table player-stats-table">
+                        <thead>
+                          <tr>
+                            <th>Player Seating</th>
+                            <th>Measure</th>
+                            <th>Lowest</th>
+                            <th>Highest</th>
+                            <th>Average</th>
+                            <th>Median</th>
+                            <th>Popular Margin</th>
+                            <th>Deviation</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.keys(playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames)?.map((playerSeating, seatingIndex) => 
+                            <>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td rowspan='3'>{playerSeating}</td>
+                                <td>Winner vs Runner</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.lowest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.highest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.average}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.median}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.mode}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerRunnerMarginStats?.stdDeviation}</td>
+                              </tr>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td>Winner vs Out</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.lowest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.highest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.average}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.median}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.mode}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.winnerOutMarginStats?.stdDeviation}</td>
+                              </tr>
+                              <tr key={`${playerSeating}-${seatingIndex}`} className={seatingIndex % 2 === 0 ? 'even-group' : 'odd-group'}>
+                                <td>Runner vs Out</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.lowest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.highest}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.average}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.median}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.mode}</td>
+                                <td>{playerGameCombo[playerGameComboKey]?.pointsStats?.playerNormalizedSeatingGames?.[playerSeating]?.marginStats?.runnerOutMarginStats?.stdDeviation}</td>
+                              </tr>
+                            </>
+                          )}
                         </tbody>
                       </table>
                       <h4 style={{marginTop: '50px', color: 'green'}}>Winner Chart</h4>
